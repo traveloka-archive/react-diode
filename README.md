@@ -12,7 +12,7 @@ $ npm install react-diode
 
 Currently only work in server side rendering, roughly like this:
 
-```
+```js
 import express from 'express';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
@@ -21,7 +21,7 @@ import HelloWorldQuery from './queries/HelloWorldQuery';
 
 let app = express();
 
-class AppComponent = () => {
+let AppComponent = () => {
   // guaranteed to have props = { hello: { world: 'Hello World' }}
   return (
     <div>{this.props.hello.world}</div>

@@ -1,0 +1,38 @@
+{
+  "name": "react-diode",
+  "version": "0.0.1",
+  "description": "Endpoint agnostic, unidirectional data fetching for React applications",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rm -rf lib && ./node_modules/.bin/babel src --out-dir lib",
+    "prepublish": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/traveloka/react-diode.git"
+  },
+  "keywords": [
+    "react",
+    "diode",
+    "unidirectional",
+    "data",
+    "fetch",
+    "endpoint",
+    "agnostic"
+  ],
+  "author": "Traveloka",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/traveloka/react-diode/issues"
+  },
+  "homepage": "https://github.com/traveloka/react-diode#readme",
+  "dependencies": {
+    "deep-extend": "^0.4.0",
+    "object-assign": "^4.0.1",
+    "superagent": "^1.4.0"
+  },
+  "devDependencies": {
+    "babel": "^5.8.23"
+  }
+}

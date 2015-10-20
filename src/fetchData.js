@@ -1,3 +1,4 @@
+import Query from './query/Query';
 import NetworkLayerSelector from './network-layer/Selector';
 
 /**
@@ -6,6 +7,8 @@ import NetworkLayerSelector from './network-layer/Selector';
  * @return {Promise}
  */
 export default function fetchData(rootContainer, options) {
-  let queries = rootContainer.queries.aggregate();
-  return NetworkLayerSelector.get().sendQueries(queries, options);
+  let queries = Query.aggregate(rootContainer, options);
+  let network = NetworkLayerSelector.get();
+
+  return network.sendQueries(queries, options);
 }

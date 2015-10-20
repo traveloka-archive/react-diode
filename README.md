@@ -12,40 +12,92 @@ $ npm install react-diode
 
 Currently only work in server side rendering, roughly like this:
 
+*App.js*
 ```js
-import express from 'express';
 import React from 'react';
-import ReactDOMServer from 'react-dom/server';
 import Diode from 'react-diode';
 import HelloWorldQuery from './queries/HelloWorldQuery';
 
-let app = express();
-
-let AppComponent = () => {
-  // guaranteed to have props = { hello: { world: 'Hello World' }}
+// react v0.14 stateless component
+let AppComponent = props => {
+  // guaranteed to have props = { hello: { world: 'Hello World, Diode!' }}
   return (
-    <div>{this.props.hello.world}</div>
+    <h1>{props.hello.world}</h1>
   );
 };
 
-let App = Diode.createContainer(AppComponent, {
+// create HOC that wraps original component and export that instead
+export default Diode.createContainer(AppComponent, {
   queries: {
-    hello: new HelloWorldQuery({
-      world: null
+    // define query requirement
+    hello: Diode.Query.create(HelloWorldQuery, {
+      world: 'Diode'
     })    
   }
 });
+```
 
+*server.js*
+```js
+import express from 'express';
+import ReactDOMServer from 'react-dom/server';
+import Diode from 'react-diode';
+import App from './components/App';
+
+let app = express();
 let options = {};
 
 app.get('/', function(req, res) {
-  // for now we still run .fetchData() manually
   Diode.fetchData(App, options).then(diodeResponse => {
     let response = ReactDOMServer.renderToStaticMarkup(App, { diodeResponse });
 
     res.send(response);
   });  
 })
+```
+
+## Query
+
+Query is how you define your data requirement inside your component. Looking at previous example,
+the query is defined like this
+
+*HelloWorldQuery.js*
+```js
+const QUERY_TYPE = 'helloWorld';
+
+export default {
+  type: QUERY_TYPE,
+  method: 'post',
+  endpoint(options) {
+    return `${options.apiDomain}/v1/hello/world`;
+  },
+  generate(fragment, options) {
+    // fragment is what you declare in your requirement
+    // transform here to match your API payload contract
+    //
+    // console.log(fragment)
+    // { world: 'Diode' }
+    return {
+      data: {
+        name: fragment.world
+      },
+      token: options.apiToken
+    };
+  },
+  resolve(response) {
+    // console.log(response)
+    // { body: { text: 'Hello World, Diode!'} }
+    return {
+      type: QUERY_TYPE,
+      // transform your API response here to match data requirement
+      data: {
+        hello: {
+          world: response.body.text
+        }
+      }
+    };
+  }
+};
 ```
 
 ## TODO

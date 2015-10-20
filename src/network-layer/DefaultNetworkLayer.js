@@ -19,7 +19,7 @@ export default {
           .set(options.headers)
           .end((err, res) => {
             if (err) {
-              console.log(err);
+              console.error(err);
               reject(err);
             } else {
               resolve(query.resolve(res.body));

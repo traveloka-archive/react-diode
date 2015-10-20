@@ -1,16 +1,15 @@
-import objectAssign from 'object-assign';
 import deepExtend from 'deep-extend';
 
 export default class QueryManager {
   /**
-   * @param {?Map<string, BaseQuery>}
+   * @param {?Map<string, queryObject>}
    * @param {?Array<DiodeContainer>}
    */
   constructor(queries = {}, children) {
     let queryMap = this._generateQueryMap(queries);
 
     this._queryMap = queryMap;
-    this._completeQueryMap = objectAssign({}, queryMap);
+    this._completeQueryMap = queryMap;
     this._valueMap = {};
 
     this._composeChildQueries(children);
@@ -44,18 +43,34 @@ export default class QueryManager {
       return;
     }
 
+    let completeQueryMap = this._copyQueryMap(this._completeQueryMap);
+
     children.forEach(child => {
       let queryMap = child.queries._completeQueryMap;
+
       Object.keys(queryMap).forEach(queryType => {
         let childQuery = queryMap[queryType];
 
-        if (this._completeQueryMap[queryType]) {
-          this._completeQueryMap[queryType].mergeStructure(childQuery.fragmentStructure);
+        if (completeQueryMap[queryType]) {
+          deepExtend(completeQueryMap[queryType].fragmentStructure, childQuery.fragmentStructure);
         } else {
-          this._completeQueryMap[queryType] = childQuery;
+          completeQueryMap[queryType] = childQuery;
         }
       });
     });
+
+    this._completeQueryMap = completeQueryMap;
+  }
+
+  _copyQueryMap(queryMap) {
+    let copiedQueryMap = {};
+
+    Object.keys(queryMap).forEach(queryType => {
+      let query = queryMap[queryType];
+      copiedQueryMap[queryType] = deepExtend({}, Object.getPrototypeOf(query), query);
+    });
+
+    return copiedQueryMap;
   }
 
   /**
@@ -94,8 +109,11 @@ export default class QueryManager {
    * @return {BaseQuery}
    */
   _compile(query) {
-    let fragment = query.fragmentStructure;
+    // we need to create fresh query fragment to remove
+    // reference to previous fragment creation
     query.fragment = {};
+
+    let fragment = query.fragmentStructure;
     for (var key in fragment) {
       if (fragment.hasOwnProperty(key)) {
         query.fragment[key] = this._compilePartialFragment(fragment[key]);
@@ -112,26 +130,30 @@ export default class QueryManager {
    * @return {string|Object}
    */
   _compilePartialFragment(partialFragment) {
-    if (typeof partialFragment === 'string') {
-      if (partialFragment.charAt(0) === '$') {
-        let valueKey = partialFragment.slice(1);
-        let valueResult = this._valueMap[valueKey];
+    let partialFragmentType = typeof partialFragment;
 
-        if (typeof valueResult === 'undefined' || valueResult === null) {
-          return partialFragment;
+    switch (partialFragmentType) {
+      case 'string':
+        if (partialFragment.charAt(0) === '$') {
+          let valueKey = partialFragment.slice(1);
+          let valueResult = this._valueMap[valueKey];
+
+          if (typeof valueResult === 'undefined' || valueResult === null) {
+            return partialFragment;
+          }
+          return valueResult;
         }
-        return valueResult;
-      }
-      return partialFragment;
+        return partialFragment;
+      case 'object':
+        let partialFragmentResult = {};
+        for (let key in partialFragment) {
+          if (partialFragment.hasOwnProperty(key)) {
+            partialFragmentResult[key] = this._compilePartialFragment(partialFragment[key]);
+          }
+        }
+        return partialFragmentResult;
+      default:
+        return partialFragment;
     }
-
-    let partialFragmentResult = {};
-    for (let key in partialFragment) {
-      if (partialFragment.hasOwnProperty(key)) {
-        partialFragmentResult[key] = this._compilePartialFragment(partialFragment[key]);
-      }
-    }
-
-    return partialFragmentResult;
   }
 }

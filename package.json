@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "scripts": {
     "lint": "marlint",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "npm run lint",
     "build": "rm -rf lib && ./node_modules/.bin/babel src --out-dir lib",
     "prepublish": "npm run build"
   },

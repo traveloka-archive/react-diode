@@ -1,6 +1,6 @@
 {
   "name": "react-diode",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Endpoint agnostic, unidirectional data fetching for React applications",
   "main": "lib/index.js",
   "scripts": {

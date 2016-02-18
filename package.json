@@ -4,6 +4,7 @@
   "description": "Endpoint agnostic, unidirectional data fetching for React applications",
   "main": "lib/index.js",
   "scripts": {
+    "lint": "marlint",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "rm -rf lib && ./node_modules/.bin/babel src --out-dir lib",
     "prepublish": "npm run build"
@@ -33,6 +34,12 @@
     "superagent": "^1.4.0"
   },
   "devDependencies": {
-    "babel": "^5.8.23"
+    "babel": "^5.8.23",
+    "marlint": "^1.5.3"
+  },
+  "marlint": {
+    "ignores": [
+      "lib/**"
+    ]
   }
 }

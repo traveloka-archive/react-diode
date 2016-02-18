@@ -1,4 +1,4 @@
-# react-diode (alpha)
+# react-diode
 
 > Endpoint agnostic, unidirectional data fetching for React application
 
@@ -100,10 +100,32 @@ export default {
 };
 ```
 
-## TODO
+## Query composition
 
-- [ ] Render trigger fetch data automatically
-- [ ] Client side implementation
+Diode also support query composition between parent and child container. Simply use `children`
+property when creating container:
+
+```js
+import ChildComponent from './child';
+
+const ParentComponent = props => {
+  return (
+    <div>
+      <ChildComponent diodeResponse={props.diodeResponse} />
+    </div>
+  )
+};
+
+export default Diode.createContaier(ParentComponent, {
+  children: [ChildComponent]
+  queries: {
+    ...
+  }
+})
+```
+
+Pass diodeResponse props from parent component to child component to make sure that child component
+also have the required data.
 
 ## License
 

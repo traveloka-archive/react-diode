@@ -11,7 +11,8 @@ function createContainerComponent(Component, spec) {
 
     static get propTypes() {
       return {
-        diodeResponse: React.PropTypes.object.isRequired
+        wrapperInfo: React.PropTypes.object,
+        diodeResponse: React.PropTypes.object
       };
     }
 
@@ -22,24 +23,24 @@ function createContainerComponent(Component, spec) {
     }
 
     _compileDiodeResponse(response) {
-      let compiledResponse = {};
-      let queries = this.queries;
+      const compiledResponse = {};
+      const queries = this.queries;
 
       if (response && typeof response === 'object') {
         Object.keys(response).forEach(type => {
-          let data = response[type];
+          const data = response[type];
 
           if (type === QueryTypes.BATCHED) {
             // batched response contains multiple data
             Object.keys(data).forEach(queryType => {
-              for (let key in queries) {
+              for (const key in queries) {
                 if (queries[key].type === queryType) {
                   compiledResponse[key] = data[queryType];
                 }
               }
             });
           } else {
-            for (let key in queries) {
+            for (const key in queries) {
               if (queries[key].type === type) {
                 compiledResponse[key] = data;
               }
@@ -52,14 +53,15 @@ function createContainerComponent(Component, spec) {
     }
 
     render() {
-      let compiledResponse = this._compileDiodeResponse(this.props.diodeResponse);
+      const compiledResponse = this._compileDiodeResponse(this.props.diodeResponse);
+      const wrapperInfo = this.props.wrapperInfo ? this.props.wrapperInfo : this.wrapperInfo;
 
-      if (!this.wrapperInfo) {
+      if (!wrapperInfo) {
         return <Component {...this.props} {...compiledResponse} />;
       }
 
       return (
-        <div {...this.wrapperInfo}>
+        <div {...wrapperInfo}>
           <Component {...this.props} {...compiledResponse} />
         </div>
       );
@@ -69,12 +71,12 @@ function createContainerComponent(Component, spec) {
   return DiodeContainer;
 }
 
-export default function createContainer(Component, spec) {
-  var componentName = Component.displayName || Component.name;
+module.exports = function createContainer(Component, spec) {
+  const componentName = Component.displayName || Component.name;
 
   spec.id = `Diode(${componentName})`;
 
-  var Container;
+  let Container;
   function ContainerConstructor(props, context) {
     if (!Container) {
       Container = createContainerComponent(Component, spec);
@@ -101,11 +103,11 @@ export default function createContainer(Component, spec) {
     }
 
     return [];
-  }
+  };
 
   ContainerConstructor.displayName = spec.id;
   ContainerConstructor.queries = new QueryManager(spec.queries, spec.children);
   ContainerConstructor.componentName = componentName;
 
   return ContainerConstructor;
-}
+};

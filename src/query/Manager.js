@@ -1,12 +1,12 @@
 import deepExtend from 'deep-extend';
 
-export default class QueryManager {
+module.exports = class QueryManager {
   /**
    * @param {?Map<string, queryObject>}
    * @param {?Array<DiodeContainer>}
    */
   constructor(queries = {}, children) {
-    let queryMap = this._generateQueryMap(queries);
+    const queryMap = this._generateQueryMap(queries);
 
     this._queryMap = queryMap;
     this._completeQueryMap = queryMap;
@@ -16,11 +16,11 @@ export default class QueryManager {
   }
 
   _generateQueryMap(queries) {
-    let queryMap = {};
+    const queryMap = {};
 
     Object.keys(queries).forEach(queryKey => {
-      let query = queries[queryKey];
-      let queryType = query.type;
+      const query = queries[queryKey];
+      const queryType = query.type;
       queryMap[queryType] = query;
     });
 
@@ -43,13 +43,13 @@ export default class QueryManager {
       return;
     }
 
-    let completeQueryMap = this._copyQueryMap(this._completeQueryMap);
+    const completeQueryMap = this._copyQueryMap(this._completeQueryMap);
 
     children.forEach(child => {
-      let queryMap = child.queries._completeQueryMap;
+      const queryMap = child.queries._completeQueryMap;
 
       Object.keys(queryMap).forEach(queryType => {
-        let childQuery = queryMap[queryType];
+        const childQuery = queryMap[queryType];
 
         if (completeQueryMap[queryType]) {
           deepExtend(completeQueryMap[queryType].fragmentStructure, childQuery.fragmentStructure);
@@ -63,10 +63,10 @@ export default class QueryManager {
   }
 
   _copyQueryMap(queryMap) {
-    let copiedQueryMap = {};
+    const copiedQueryMap = {};
 
     Object.keys(queryMap).forEach(queryType => {
-      let query = queryMap[queryType];
+      const query = queryMap[queryType];
       copiedQueryMap[queryType] = deepExtend({}, Object.getPrototypeOf(query), query);
     });
 
@@ -87,15 +87,15 @@ export default class QueryManager {
    * @return {Array<BaseQuery>}
    */
   aggregate() {
-    let aggregateQueries = [];
-    let queryMap = this._completeQueryMap;
+    const aggregateQueries = [];
+    const queryMap = this._completeQueryMap;
 
-    for (let prop in queryMap) {
+    for (const prop in queryMap) {
       if (!(queryMap.hasOwnProperty(prop))) {
         continue;
       }
-      let currentQuery = queryMap[prop];
-      let query = this._compile(currentQuery);
+      const currentQuery = queryMap[prop];
+      const query = this._compile(currentQuery);
       aggregateQueries.push(query);
     }
     return aggregateQueries;
@@ -113,8 +113,8 @@ export default class QueryManager {
     // reference to previous fragment creation
     query.fragment = {};
 
-    let fragment = query.fragmentStructure;
-    for (var key in fragment) {
+    const fragment = query.fragmentStructure;
+    for (const key in fragment) {
       if (fragment.hasOwnProperty(key)) {
         query.fragment[key] = this._compilePartialFragment(fragment[key]);
       }
@@ -130,13 +130,13 @@ export default class QueryManager {
    * @return {string|Object}
    */
   _compilePartialFragment(partialFragment) {
-    let partialFragmentType = typeof partialFragment;
+    const partialFragmentType = typeof partialFragment;
 
     switch (partialFragmentType) {
       case 'string':
         if (partialFragment.charAt(0) === '$') {
-          let valueKey = partialFragment.slice(1);
-          let valueResult = this._valueMap[valueKey];
+          const valueKey = partialFragment.slice(1);
+          const valueResult = this._valueMap[valueKey];
 
           if (typeof valueResult === 'undefined' || valueResult === null) {
             return partialFragment;
@@ -144,16 +144,17 @@ export default class QueryManager {
           return valueResult;
         }
         return partialFragment;
-      case 'object':
-        let partialFragmentResult = {};
-        for (let key in partialFragment) {
+      case 'object': {
+        const partialFragmentResult = {};
+        for (const key in partialFragment) {
           if (partialFragment.hasOwnProperty(key)) {
             partialFragmentResult[key] = this._compilePartialFragment(partialFragment[key]);
           }
         }
         return partialFragmentResult;
+      }
       default:
         return partialFragment;
     }
   }
-}
+};

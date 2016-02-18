@@ -1,4 +1,4 @@
 // QueryTypes enum
-export default {
+module.exports = {
   BATCHED: 'batched'
 };

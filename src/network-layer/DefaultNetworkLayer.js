@@ -1,7 +1,7 @@
 import request from 'superagent';
 
 // Simplify static method, use object definition
-export default {
+module.exports = {
   /**
    * Default data-fetching layer in Diode
    *
@@ -11,8 +11,8 @@ export default {
   sendQueries(queries, options) {
     return Promise.all(queries.map(query => {
       return new Promise((resolve, reject) => {
-        var apiEndpoint = options.apiDomain + query.endpoint;
-        var apiPayload = query.generateAPIPayload(options);
+        const apiEndpoint = options.apiDomain + query.endpoint;
+        const apiPayload = query.generateAPIPayload(options);
 
         request[query.method](apiEndpoint)
           .send(apiPayload)

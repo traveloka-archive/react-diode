@@ -1,16 +1,15 @@
 import DefaultNetworkLayer from './DefaultNetworkLayer';
 
-var activeNetworkLayer = DefaultNetworkLayer;
+let activeNetworkLayer = DefaultNetworkLayer;
 
-export default {
-  injectNetworkLayer(CustomNetworkLayer) {
-    if (typeof CustomNetworkLayer.sendQueries !== 'function') {
-      throw new Error('Invalid CustomNetworkLayer without .sendQueries method');
-    }
-
-    activeNetworkLayer = CustomNetworkLayer;
-  },
-  get() {
-    return activeNetworkLayer;
+export function injectNetworkLayer(CustomNetworkLayer) {
+  if (typeof CustomNetworkLayer.sendQueries !== 'function') {
+    throw new Error('Invalid CustomNetworkLayer without .sendQueries method');
   }
-};
+
+  activeNetworkLayer = CustomNetworkLayer;
+}
+
+export function get() {
+  return activeNetworkLayer;
+}

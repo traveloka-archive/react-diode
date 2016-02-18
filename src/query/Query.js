@@ -1,14 +1,14 @@
 import deepExtend from 'deep-extend';
 
 function aggreateQuery(container, options) {
-  let queries = container.queries.aggregate();
+  const queries = container.queries.aggregate();
 
   return queries.map(query => compileQuery(query, options));
 }
 
 function compileQuery(query, options) {
   let apiEndpoint;
-  let apiPayload = query.generate(query.fragment, options);
+  const apiPayload = query.generate(query.fragment, options);
 
   if (typeof query.endpoint === 'function') {
     apiEndpoint = query.endpoint(options);
@@ -36,23 +36,23 @@ function createQuery(QueryShape, fragmentStructure) {
     throw new TypeError('Missing .resolve() method definition');
   }
 
-  let query = Object.create(QueryShape);
+  const query = Object.create(QueryShape);
   query.fragmentStructure = fragmentStructure;
 
   return query;
 }
 
 function createBatchedQuery(QueryShape, queryGroupTypes, queryMap) {
-  let query = createQuery(QueryShape, queryMap);
-  let originalPayloadGenerator = query.generate;
+  const query = createQuery(QueryShape, queryMap);
+  const originalPayloadGenerator = query.generate;
 
   query.fragment = query.fragmentStructure;
   query.generate = (fragment, options) => {
-    let data = {};
-    let defaultMissingValue = options.defaultMissingValue ? options.defaultMissingValue : null;
+    const data = {};
+    const defaultMissingValue = options.defaultMissingValue ? options.defaultMissingValue : null;
 
     queryGroupTypes.forEach(queryType => {
-      let query = fragment[queryType];
+      const query = fragment[queryType];
 
       if (query) {
         data[queryType] = query.payload;
@@ -69,7 +69,7 @@ function createBatchedQuery(QueryShape, queryGroupTypes, queryMap) {
 
 function reduceQuery(queries, QueryGroup, queryGroupTypes, options) {
   let rawGroupedQuery;
-  let reducedQuery = [];
+  const reducedQuery = [];
 
   queries.forEach(query => {
     if (queryGroupTypes.indexOf(query.type) === -1) {
@@ -77,7 +77,7 @@ function reduceQuery(queries, QueryGroup, queryGroupTypes, options) {
       return;
     }
 
-    let groupedQueryFragment = {
+    const groupedQueryFragment = {
       [query.type]: query
     };
 
@@ -89,15 +89,15 @@ function reduceQuery(queries, QueryGroup, queryGroupTypes, options) {
     }
   });
 
-  let groupedQuery = compileQuery(rawGroupedQuery, options);
+  const groupedQuery = compileQuery(rawGroupedQuery, options);
   reducedQuery.push(groupedQuery);
   return reducedQuery;
 }
 
-let DiodeQuery = {
+const DiodeQuery = {
   aggregate: aggreateQuery,
   create: createQuery,
   reduce: reduceQuery
 };
 
-export default DiodeQuery;
+module.exports = DiodeQuery;

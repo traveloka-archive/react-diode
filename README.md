@@ -15,24 +15,21 @@ by taking what's best from Relay and removing what doesn't work for us.
 
 ## Features
 
+- **Unidirectional**
+
+  Data requirement flows one direction from child component to parent component so root component will know all data the child need. No more confusion where the data comes from (or what component should fetch what data) as root component data is the only source of truth.
+
 - **Declarative**
 
-  Declare your data requirements declaratively, no need to manually call API in `componentDidMount`
-  and use `this.state` to store data from server. All your data will be available as props.
+  Declare your data requirements declaratively, no need to manually call API in `componentDidMount` and use `this.state` to store data from server. All your data in component will be available as props.
 
 - **Colocation**
 
-  Query next to views that rely on them. See your data requirement in the same place
-  that your view resides.
+  Query next to views that rely on them. See your data requirement in the same place that your view resides.
 
 - **Endpoint agnostic**
 
-  Every query will have its own endpoint and configuration on how to call them. You can use any
-  HTTP-based endpoint, including REST and yes, GraphQL.
-
-- **Batched query**
-
-  For some reason you may want for some queries to be sent as one payload, while still declaring data in your component using single query.
+  Every query will have its own endpoint and configuration on how to call them. You can use any HTTP-based endpoint, including REST and yes, GraphQL.
 
 ## Install
 

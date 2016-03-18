@@ -54,6 +54,7 @@
     "babel-preset-react": "^6.5.0",
     "babel-preset-stage-1": "^6.5.0",
     "chai": "^3.5.0",
+    "codecov": "^1.0.1",
     "flow-bin": "^0.22.1",
     "marlint": "^1.5.3",
     "mocha": "^2.4.5",

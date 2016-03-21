@@ -1,3 +1,6 @@
+/**
+ * @flow
+ */
 import DiodeRootQuery from '../query/DiodeRootQuery';
 import { create as createContainer } from './DiodeContainer';
 import type { DiodeContainerSpec } from './DiodeContainer';

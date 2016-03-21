@@ -1,7 +1,12 @@
+/**
+ * @flow
+ */
 import type { NetworkLayer } from '../tools/DiodeTypes';
 import type { DiodeQueryRequest } from '../query/DiodeQueryRequest';
 
 class DiodeNetworkLayer {
+  _injectedNetworkLayer: NetworkLayer;
+
   /**
    * @internal
    *

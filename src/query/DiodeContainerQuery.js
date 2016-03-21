@@ -1,4 +1,6 @@
-/* @flow */
+/**
+ * @flow
+ */
 import deepExtend from 'deep-extend';
 import type { DiodeQuery } from '../tools/DiodeTypes';
 import type { DiodeContainer } from '../container/DiodeContainer';

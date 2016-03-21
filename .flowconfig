@@ -1,0 +1,12 @@
+[ignore]
+.*/lib/
+.*/examples
+
+[include]
+../node_modules/
+../src/
+
+[libs]
+
+[options]
+esproposal.class_instance_fields=enable

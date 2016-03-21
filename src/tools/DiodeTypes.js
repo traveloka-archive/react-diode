@@ -1,4 +1,7 @@
-import type DiodeQueryRequest from '../query/DiodeQueryRequest';
+/**
+ * @flow
+ */
+import type { DiodeQueryRequest } from '../query/DiodeQueryRequest';
 
 export type NetworkLayer = {
   sendQueries: (requests: Array<DiodeQueryRequest>) => ?Promise
@@ -6,7 +9,7 @@ export type NetworkLayer = {
 
 export type QueryDefinition = {
   type: string,
-  generate: (fragment: any, params: any, options: any) => DiodeQueryRequest,
+  request: (fragment: any, params: any, options: any) => DiodeQueryRequest,
   resolve: (fragment: any, data: any, options: any) => any
 };
 

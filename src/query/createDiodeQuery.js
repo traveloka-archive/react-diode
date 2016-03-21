@@ -1,3 +1,6 @@
+/**
+ * @flow
+ */
 import type { QueryDefinition, DiodeQuery } from '../tools/DiodeTypes';
 
 function createDiodeQuery(

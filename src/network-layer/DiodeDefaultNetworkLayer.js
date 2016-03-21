@@ -1,3 +1,6 @@
+/**
+ * @flow
+ */
 import fetch from 'isomorphic-fetch';
 import type { DiodeQueryRequest } from '../query/DiodeQueryRequest';
 import type { DiodeFetchOptions } from '../tools/DiodeTypes';
@@ -33,21 +36,7 @@ class DiodeDefaultNetworkLayer {
     queryRequests: Array<DiodeQueryRequest>,
     options: DiodeFetchOptions
   ): Promise {
-    const requests = this._sendRequests(queryRequests, options);
-
-    return Promise.all(requests).then(responses => {
-      return responses.reduce((result, response) => {
-        result[response.type] = response.data;
-        return result;
-      }, {});
-    });
-  }
-
-  _sendRequests(
-    queryRequests: Array<DiodeQueryRequest>,
-    options: DiodeFetchOptions
-  ): Promise {
-    return queryRequests.map(query => {
+    const requests = queryRequests.map(query => {
       /* istanbul ignore next */
       const headers = options.headers ? options.headers : this._defaultHeaders;
       const { url, method, payload } = query;
@@ -62,18 +51,10 @@ class DiodeDefaultNetworkLayer {
         fetchParams.body = JSON.stringify(payload);
       }
 
-      return fetch(apiUrl, fetchParams)
-      .then(response => response.json())
-      .then(response => {
-        // modify response with query type so in the end we can convert
-        // this query response into Map<queryType, responseData>
-        // which is exactly what Diode wants
-        return {
-          type: query.type,
-          data: query.resolve(response, query.fragment, options)
-        };
-      });
+      return fetch(apiUrl, fetchParams).then(response => response.json());
     });
+
+    return Promise.all(requests);
   }
 }
 

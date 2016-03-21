@@ -12,20 +12,36 @@ chai.use(sinonChai);
 describe('DiodeStore', () => {
   it('should be able to send query via network layer', done => {
     const RootContainer = {
-      query: {}
-    };
-    const queryRequestsMock = [
-      {
-        fragment: {}
-      }
-    ];
-    const responseMock = {
-      contentResource: {
-        SimpleSentence: {
-          login: 'Masuk'
+      query: {
+        getContainerQuery() {
+          return {
+            map: {
+              cr: {
+                type: 'contentResource'
+              }
+            }
+          };
         }
       }
     };
+    const queryRequestsMock = [
+      {
+        type: 'contentResource',
+        fragment: {},
+        resolve(response, fragment, options) {
+          return response.data;
+        }
+      }
+    ];
+    const responseMock = [
+      {
+        data: {
+          SimpleSentence: {
+            login: 'Masuk'
+          }
+        }
+      }
+    ];
 
     const gqStub = sinon.stub(DiodeQueryRequest, 'getQueryRequests');
     const sqStub = sinon.stub(DiodeNetworkLayer.prototype, 'sendQueries');
@@ -35,17 +51,15 @@ describe('DiodeStore', () => {
       {}
     ).returns(Promise.resolve(responseMock));
 
-    Store.forceFetch(RootContainer).then(response => {
-      const expectedResponse = {
-        __diodeResponse: {
-          contentResource: {
-            SimpleSentence: {
-              login: 'Masuk'
-            }
+    Store.forceFetch(RootContainer).then(props => {
+      const expectedProps = {
+        cr: {
+          SimpleSentence: {
+            login: 'Masuk'
           }
         }
       };
-      response.should.be.deep.equal(expectedResponse);
+      props.should.be.deep.equal(expectedProps);
       gqStub.restore();
       sqStub.restore();
       done();
@@ -54,21 +68,45 @@ describe('DiodeStore', () => {
 
   it('should resolve query dependency', done => {
     const RootContainer = {
-      query: {}
+      query: {
+        getContainerQuery() {
+          return {
+            map: {
+              hotel: {
+                type: 'hotelDetail'
+              },
+              hotelRoom: {
+                type: 'hotelRoom'
+              }
+            }
+          };
+        }
+      }
     };
     const opts = {};
     const queryRequest1 = {
       type: 'hotelDetail',
       fragment: {
         id: 123
+      },
+      resolve(response, fragment, options) {
+        return response.data;
       }
     };
     const queryRequest2 = {
       type: 'hotelRoom',
-      pending: true,
-      dependency: {
-        type: 'hotelDetail'
+      resolve(response, fragment, options) {
+        return response.data;
       },
+      dependencies: [
+        {
+          type: 'hotelDetail'
+        }
+      ],
+      dependencyMap: {
+        hotelDetail: 0
+      },
+      resolvedDependencies: [],
       callback(hotel) {
         return {
           payload: {
@@ -81,21 +119,27 @@ describe('DiodeStore', () => {
       type: queryRequest2.type,
       fragment: queryRequest2.fragment,
       resolve: queryRequest2.resolve,
-      ...queryRequest2.callback({ roomId: 5678 })
+      payload: {
+        id: 5678
+      }
     };
 
-    const hotelDetailResponseMock = {
-      hotelDetail: {
-        id: 1234,
-        roomId: 5678
+    const hotelDetailResponseMock = [
+      {
+        data: {
+          id: 1234,
+          roomId: 5678
+        }
       }
-    };
-    const hotelRoomResponseMock = {
-      hotelRoom: {
-        id: 5678,
-        name: 'Deluxe Room'
+    ];
+    const hotelRoomResponseMock = [
+      {
+        data: {
+          id: 5678,
+          name: 'Deluxe Room'
+        }
       }
-    };
+    ];
 
     const queryRequestsMock = [queryRequest1, queryRequest2];
     const queryRequestMock1 = [queryRequest1];
@@ -113,24 +157,22 @@ describe('DiodeStore', () => {
       opts
     ).returns(Promise.resolve(hotelRoomResponseMock));
 
-    Store.forceFetch(RootContainer, opts).then(response => {
-      const expectedResponse = {
-        __diodeResponse: {
-          hotelDetail: {
-            id: 1234,
-            roomId: 5678
-          },
-          hotelRoom: {
-            id: 5678,
-            name: 'Deluxe Room'
-          }
+    Store.forceFetch(RootContainer, opts).then(props => {
+      const expectedProps = {
+        hotel: {
+          id: 1234,
+          roomId: 5678
+        },
+        hotelRoom: {
+          id: 5678,
+          name: 'Deluxe Room'
         }
       };
 
-      response.should.be.deep.equal(expectedResponse);
+      props.should.be.deep.equal(expectedProps);
       gqStub.restore();
       sqStub.restore();
       done();
-    });
+    }).catch(err => console.error(err.stack));
   });
 });

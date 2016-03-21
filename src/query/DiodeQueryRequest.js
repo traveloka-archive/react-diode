@@ -1,3 +1,6 @@
+/**
+ * @flow
+ */
 import type { DiodeRootContainer } from '../container/DiodeRootContainer';
 import type { QueryDefinition } from '../tools/DiodeTypes';
 
@@ -10,30 +13,22 @@ type QueryRequestInfo = {
 }
 
 type PendingQueryRequestInfo = {
-  pending: bool,
-  dependency: QueryDefinition,
+  dependencies: Array<QueryDefinition>,
+  dependencyMap: {
+    [queryType: string]: number
+  },
+  resolvedDependencies: Array,
   callback: PendingQueryCallback
 }
 
-export type QueryRequest = {
+type QueryInfo = {
   type: string,
   fragment: any,
   resolve: (response: any) => any,
-  url: string,
-  method: string,
-  payload: any
 }
 
-export type PendingQueryRequest = {
-  type: string,
-  fragment: any,
-  resolve: (response: any) => any,
-  pending: bool,
-  dependency: QueryDefinition,
-  callback: PendingQueryCallback
-}
-
-// TODO find a way to merge this type without writing twice
+export type QueryRequest = QueryInfo & QueryRequestInfo
+export type PendingQueryRequest = QueryInfo & PendingQueryRequestInfo
 export type DiodeQueryRequestInfo = QueryRequestInfo | PendingQueryRequestInfo;
 export type DiodeQueryRequest = QueryRequest | PendingQueryRequest
 
@@ -42,12 +37,28 @@ export type DiodeQueryRequest = QueryRequest | PendingQueryRequest
  *
  */
 export function createPendingQueryRequest(
-  Query: QueryDefinition,
+  QueryDependencies: QueryDefinition | Array<QueryDefinition>,
   callback: PendingQueryCallback
 ): PendingQueryRequestInfo {
+  if (!(QueryDependencies instanceof Array)) {
+    QueryDependencies = [QueryDependencies];
+  }
+
+  // Create a temporary dependency map to sort resolved query later. We need to
+  // sort the query resolution because the callback must be called with the same
+  // sequence as listed query dependencies
+  //
+  // By creating this map, we can then "sort" query resolution in O(1) using
+  // dependencyMap[QueryType] as the index to put the query
+  const dependencyMap = QueryDependencies.reduce((map, Query, index) => {
+    map[Query.type] = index;
+    return map;
+  }, {});
+
   return {
-    pending: true,
-    dependency: Query,
+    dependencies: QueryDependencies,
+    dependencyMap,
+    resolvedDependencies: [],
     callback
   };
 }

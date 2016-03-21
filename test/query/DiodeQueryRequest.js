@@ -17,8 +17,13 @@ describe('DiodeQueryRequest', () => {
     };
     const callbackSpy = sinon.spy();
     const request = createPendingQueryRequest(QueryShape, callbackSpy);
-    request.pending.should.be.equal(true);
-    request.dependency.should.be.deep.equal(QueryShape);
+    const expectedDependencyMap = {
+      contentResource: 0
+    };
+
+    request.dependencies.should.be.deep.equal([QueryShape]);
+    request.dependencyMap.should.be.deep.equal(expectedDependencyMap);
+    request.resolvedDependencies.should.be.deep.equal([]);
     request.callback.should.be.equal(callbackSpy);
   });
 

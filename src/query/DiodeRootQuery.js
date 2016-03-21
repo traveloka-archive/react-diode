@@ -1,3 +1,6 @@
+/**
+ * @flow
+ */
 import deepExtend from 'deep-extend';
 import type DiodeContainerQuery from './DiodeContainerQuery';
 import type { DiodeQuery, Variables } from '../tools/DiodeTypes';
@@ -12,6 +15,14 @@ class DiodeRootQuery {
 
   constructor(containerQuery: DiodeContainerQuery) {
     this._containerQuery = containerQuery;
+  }
+
+  /**
+   * @internal
+   *
+   */
+  getContainerQuery(): DiodeContainerQuery {
+    return this._containerQuery;
   }
 
   /**

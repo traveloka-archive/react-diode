@@ -41,8 +41,7 @@
   "dependencies": {
     "deep-extend": "^0.4.1",
     "isomorphic-fetch": "^2.2.1",
-    "object-assign": "^4.0.1",
-    "superagent": "^1.4.0"
+    "object-assign": "^4.0.1"
   },
   "peerDependencies": {
     "react": "^0.14.7"

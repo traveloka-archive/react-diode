@@ -2,17 +2,19 @@
  * @flow
  */
 import type { DiodeRootContainer } from '../container/DiodeRootContainer';
-import type { QueryDefinition } from '../tools/DiodeTypes';
+import type { DiodeQuery, QueryDefinition } from '../tools/DiodeTypes';
 
 export type PendingQueryCallback = (response: any) => any
 
 type QueryRequestInfo = {
+  pending: boolean,
   url: string,
   method: string,
   payload: any
 }
 
 type PendingQueryRequestInfo = {
+  pending: boolean,
   dependencies: Array<QueryDefinition>,
   dependencyMap: {
     [queryType: string]: number
@@ -30,7 +32,8 @@ type QueryInfo = {
 export type QueryRequest = QueryInfo & QueryRequestInfo
 export type PendingQueryRequest = QueryInfo & PendingQueryRequestInfo
 export type DiodeQueryRequestInfo = QueryRequestInfo | PendingQueryRequestInfo;
-export type DiodeQueryRequest = QueryRequest | PendingQueryRequest
+
+export type DiodeQueryRequest = QueryRequest | PendingQueryRequest;
 
 /**
  * @public
@@ -44,21 +47,9 @@ export function createPendingQueryRequest(
     QueryDependencies = [QueryDependencies];
   }
 
-  // Create a temporary dependency map to sort resolved query later. We need to
-  // sort the query resolution because the callback must be called with the same
-  // sequence as listed query dependencies
-  //
-  // By creating this map, we can then "sort" query resolution in O(1) using
-  // dependencyMap[QueryType] as the index to put the query
-  const dependencyMap = QueryDependencies.reduce((map, Query, index) => {
-    map[Query.type] = index;
-    return map;
-  }, {});
-
   return {
+    pending: true,
     dependencies: QueryDependencies,
-    dependencyMap,
-    resolvedDependencies: [],
     callback
   };
 }
@@ -73,6 +64,7 @@ export function createQueryRequest(
   payload: any
 ): QueryRequestInfo {
   return {
+    pending: false,
     url,
     method,
     payload
@@ -102,10 +94,10 @@ export function getQueryRequests(
  * Generate query request to be sent via sendQueries
  */
 export function generateQueryRequest(
-  QueryShape: QueryDefinition,
+  query: DiodeQuery,
   queryRequestInfo: QueryRequestInfo
 ): DiodeQueryRequest {
-  const { type, fragment, resolve } = QueryShape;
+  const { type, fragment, resolve } = query;
 
   return {
     type,

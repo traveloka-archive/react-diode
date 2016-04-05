@@ -12,7 +12,9 @@ class DiodeNetworkLayer {
    *
    * Supply your own network layer
    */
-  injectNetworkLayer(networkLayer: ?NetworkLayer): void {
+  injectNetworkLayer(
+    networkLayer: NetworkLayer
+  ): void {
     this._injectedNetworkLayer = networkLayer;
   }
 
@@ -21,7 +23,10 @@ class DiodeNetworkLayer {
    *
    * Send diode query via injected network layer
    */
-  sendQueries(queryRequests: Array<DiodeQueryRequest>, options: any): Promise {
+  sendQueries(
+    queryRequests: Array<DiodeQueryRequest>,
+    options: any
+  ): Promise {
     const networkLayer = this._getCurrentNetworkLayer();
     return networkLayer.sendQueries(queryRequests, options);
   }

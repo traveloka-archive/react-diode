@@ -5,11 +5,19 @@ import sinonChai from 'sinon-chai';
 import Store from '../../src/store/DiodeStore';
 import DiodeNetworkLayer from '../../src/network/DiodeNetworkLayer';
 import * as DiodeQueryRequest from '../../src/query/DiodeQueryRequest';
+import DiodeQueryTypes from '../../src/query/DiodeQueryTypes';
 
 chai.should();
 chai.use(sinonChai);
 
 describe('DiodeStore', () => {
+  it('should allow network layer injection', () => {
+    const net = sinon.stub(DiodeNetworkLayer.prototype, 'injectNetworkLayer');
+    const networkLayer = {};
+    Store.injectNetworkLayer(networkLayer);
+    net.should.be.calledWith(networkLayer);
+  });
+
   it('should be able to send query via network layer', done => {
     const RootContainer = {
       query: {
@@ -173,6 +181,107 @@ describe('DiodeStore', () => {
       gqStub.restore();
       sqStub.restore();
       done();
-    }).catch(err => console.error(err.stack));
+    });
+  });
+
+  it('should allow batch query', done => {
+    const RootContainer = {
+      query: {
+        getContainerQuery() {
+          return {
+            map: {
+              hotel: {
+                type: 'hotelDetail'
+              },
+              hotelRoom: {
+                type: 'hotelRoom'
+              }
+            }
+          };
+        }
+      }
+    };
+    const opts = {};
+    const queryRequest1 = {
+      type: 'hotelDetail',
+      fragment: {
+        id: 123
+      },
+      resolve(response, fragment, options) {
+        return response.data;
+      }
+    };
+    const queryRequest2 = {
+      type: 'hotelRoom',
+      fragment: {
+        hotelId: 123
+      },
+      resolve(response, fragment, options) {
+        return response.data;
+      }
+    };
+    const batchQuery = {
+      type: DiodeQueryTypes.BATCH,
+      name: 'hotelBatch',
+      queryTypes: ['hotelDetail', 'hotelRoom'],
+      request(queries, options) {
+      },
+      resolve(response, options) {
+        return {
+          hotelDetail: {
+            data: response.data.detail
+          },
+          hotelRoom: {
+            data: response.data.room
+          }
+        };
+      }
+    };
+    const batchQueryRequest = {
+      type: batchQuery.type,
+      resolve: batchQuery.resolve
+    };
+    const batchResponseMock = [{
+      data: {
+        detail: {
+          id: 1234,
+          name: 'Hotel Rich'
+        },
+        room: {
+          id: 5678,
+          name: 'Deluxe Room'
+        }
+      }
+    }];
+
+    const queryRequests = [queryRequest1, queryRequest2];
+    const batchQueryRequests = [batchQueryRequest];
+
+    const gqStub = sinon.stub(DiodeQueryRequest, 'getQueryRequests');
+    const sqStub = sinon.stub(DiodeNetworkLayer.prototype, 'sendQueries');
+    gqStub.withArgs(RootContainer).returns(queryRequests);
+    sqStub.withArgs(
+      batchQueryRequests,
+      opts
+    ).returns(Promise.resolve(batchResponseMock));
+
+    Store.useBatchQueries([batchQuery]);
+    Store.forceFetch(RootContainer, opts).then(props => {
+      const expectedProps = {
+        hotel: {
+          id: 1234,
+          name: 'Hotel Rich'
+        },
+        hotelRoom: {
+          id: 5678,
+          name: 'Deluxe Room'
+        }
+      };
+
+      props.should.be.deep.equal(expectedProps);
+      gqStub.restore();
+      sqStub.restore();
+      done();
+    });
   });
 });

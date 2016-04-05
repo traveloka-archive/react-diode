@@ -2,6 +2,7 @@ import DiodeStore from './store/DiodeStore';
 import DiodeContainer from './container/DiodeContainer';
 import DiodeRootContainer from './container/DiodeRootContainer';
 import DiodeDefaultNetworkLayer from './network-layer/DiodeDefaultNetworkLayer';
+import DiodeQueryTypes from './query/DiodeQueryTypes';
 import { createDiodeQuery } from './query/createDiodeQuery';
 import {
   createQueryRequest,
@@ -11,12 +12,14 @@ import {
 const DiodePublic = {
   Store: DiodeStore,
   DefaultNetworkLayer: DiodeDefaultNetworkLayer,
+  QueryTypes: DiodeQueryTypes,
 
   createContainer: DiodeContainer.create,
   createRootContainer: DiodeRootContainer.create,
   createQuery: createDiodeQuery,
   queryRequest: createQueryRequest,
   waitForQuery: createPendingQueryRequest,
+  useBatchQueries: DiodeStore.useBatchQueries.bind(DiodeStore),
   injectNetworkLayer: DiodeStore.injectNetworkLayer.bind(DiodeStore)
 };
 

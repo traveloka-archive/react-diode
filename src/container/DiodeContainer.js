@@ -4,7 +4,7 @@
 import React from 'react';
 import objectAssign from 'object-assign';
 import DiodeContainerQuery from '../query/DiodeContainerQuery';
-import type { DiodeQuery } from '../query/DiodeTypes';
+import type { DiodeQueryMap } from '../tools/DiodeTypes';
 
 export type DiodeContainer = {
   query: DiodeContainerQuery,
@@ -13,10 +13,11 @@ export type DiodeContainer = {
 }
 
 export type DiodeContainerSpec = {
+  wrapperInfo: {
+    [key: string]: string
+  },
   children?: Array<DiodeContainer>,
-  queries?: {
-    [key: string]: DiodeQuery
-  }
+  queries?: DiodeQueryMap
 }
 
 function createContainerComponent(Component, spec) {
@@ -24,11 +25,6 @@ function createContainerComponent(Component, spec) {
   const containerName = `Diode(${componentName})`;
 
   class DiodeContainer extends React.Component {
-    constructor(...args) {
-      super(...args);
-      this.query = spec.query;
-    }
-
     render() {
       return (
         <Component {...this.props} />
@@ -37,20 +33,16 @@ function createContainerComponent(Component, spec) {
   }
 
   DiodeContainer.displayName = containerName;
-  DiodeContainer.propTypes = {
-    __diodeResponse: React.PropTypes.object
-  };
-
   return DiodeContainer;
 }
 
 function createContainer(
-  Component: React.Component,
+  Component,
   spec: DiodeContainerSpec
 ): DiodeContainer {
   const componentName = Component.displayName || Component.name;
   const containerName = `Diode(${componentName})`;
-  const query = spec.query = new DiodeContainerQuery(spec.queries, spec.children);
+  const query = new DiodeContainerQuery(spec.queries, spec.children);
 
   let Container;
   function ContainerConstructor(props, context) {

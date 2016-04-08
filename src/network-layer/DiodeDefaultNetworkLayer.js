@@ -66,7 +66,14 @@ class DiodeDefaultNetworkLayer {
       return fetch(apiUrl, fetchParams).then(response => response.json());
     });
 
-    return Promise.all(requests);
+    return Promise.all(requests).then(responses => {
+      // Convert array of response into Map<QueryType, QueryResponse>
+      return responses.reduce((responseMap, response, id) => {
+        const { type } = queryRequests[id];
+        responseMap[type] = response;
+        return responseMap;
+      }, {});
+    });
   }
 }
 

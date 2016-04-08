@@ -19,7 +19,7 @@ const DiodePublic = {
   createQuery: createDiodeQuery,
   queryRequest: createQueryRequest,
   waitForQuery: createPendingQueryRequest,
-  useBatchQueries: DiodeStore.useBatchQueries.bind(DiodeStore),
+  useBatchQuery: DiodeStore.useBatchQuery.bind(DiodeStore),
   injectNetworkLayer: DiodeStore.injectNetworkLayer.bind(DiodeStore)
 };
 

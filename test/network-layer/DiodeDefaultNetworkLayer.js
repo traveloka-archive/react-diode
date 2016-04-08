@@ -67,21 +67,21 @@ describe('DiodeDefaultNetworkLayer', () => {
     .reply(200, query2ResponseMock);
 
     network.sendQueries([queryMock1, queryMock2], {}).then(response => {
-      const expectedResponse = [
-        {
+      const expectedResponse = {
+        contentResource: {
           data: {
             SimpleSentences: {
               login: 'Masuk'
             }
           }
         },
-        {
+        hotelDetail: {
           data: {
             id: 1234,
             name: 'Noname Hotel'
           }
         }
-      ];
+      };
       response.should.be.deep.equal(expectedResponse);
       done();
     });

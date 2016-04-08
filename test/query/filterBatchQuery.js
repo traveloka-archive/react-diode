@@ -1,11 +1,11 @@
 import { describe, it } from 'mocha';
-import filterBatchQueries from '../../src/query/filterBatchQueries';
+import filterBatchQuery from '../../src/query/filterBatchQuery';
 import chai from 'chai';
 import sinon from 'sinon';
 
 chai.should();
 
-describe('filterBatchQueries', () => {
+describe('filterBatchQuery', () => {
   it('should filter some queries as BatchQuery', () => {
     const resolveSpy = sinon.spy();
     const queries = [
@@ -25,30 +25,26 @@ describe('filterBatchQueries', () => {
         }
       }
     ];
-    const batchQueries = [
-      {
-        queryTypes: ['a', 'c'],
-        type: 'batch',
-        name: 'x',
-        request(queries, options) {
-          return {
-            url: '/api/v1/batch',
-            method: 'post',
-            payload: {
-              data: {
-                a: queries[0].payload,
-                c: queries[1].payload
-              }
+    const batchQuery = {
+      queryTypes: ['a', 'c'],
+      type: 'batch',
+      name: 'x',
+      request(queries, options) {
+        return {
+          url: '/api/v1/batch',
+          method: 'post',
+          payload: {
+            data: {
+              a: queries[0].payload,
+              c: queries[1].payload
             }
-          };
-        },
-        resolve: resolveSpy
-      }
-    ];
-    const expectedQueries = [
-      {
-        type: 'b'
+          }
+        };
       },
+      resolve: resolveSpy
+    };
+
+    const expectedQueries = [
       {
         type: 'batch',
         url: '/api/v1/batch',
@@ -64,12 +60,15 @@ describe('filterBatchQueries', () => {
           }
         },
         resolve: resolveSpy
+      },
+      {
+        type: 'b'
       }
     ];
 
-    filterBatchQueries(
+    filterBatchQuery(
       queries,
-      batchQueries
+      batchQuery
     ).should.deep.equal(expectedQueries);
   });
 
@@ -82,12 +81,10 @@ describe('filterBatchQueries', () => {
         }
       }
     ];
-    const batchQueries = [
-      {
-        queryTypes: ['a', 'b'],
-        name: 'x'
-      }
-    ];
+    const batchQuery = {
+      queryTypes: ['a', 'b'],
+      name: 'x'
+    };
     const expectedQueries = [
       {
         type: 'a',
@@ -97,9 +94,9 @@ describe('filterBatchQueries', () => {
       }
     ];
 
-    filterBatchQueries(
+    filterBatchQuery(
       queries,
-      batchQueries
+      batchQuery
     ).should.deep.equal(expectedQueries);
   });
 });

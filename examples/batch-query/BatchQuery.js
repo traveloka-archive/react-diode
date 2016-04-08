@@ -9,9 +9,7 @@ import type DiodeQueryRequest from '../../src/query/DiodeQueryRequest';
 
 export default {
   // Batch query should have query type equal to Diode.QueryTypes.BATCH
-  // and a unique name
   type: Diode.QueryTypes.BATCH,
-  name: 'BatchHotelHello',
 
   // Declare which query types should be merged one into batch query
   // The order of query types will be used to determine the order of

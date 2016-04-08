@@ -4,7 +4,7 @@ import React from 'react';
 import { renderToString } from 'react-dom/server';
 import Diode, { Store, DefaultNetworkLayer } from '../..';
 import BatchComponent from './BatchComponent';
-import BatchHotelHelloQuery from './BatchHotelHelloQuery';
+import BatchQuery from './BatchQuery';
 
 const PORT = 3000;
 const app = express();
@@ -19,7 +19,7 @@ Diode.injectNetworkLayer(
 // We tell Diode that some query requests should be merged,
 // in this case hotelDetal and helloWorld queries should be
 // sent as one payload instead of two parallel requests
-Diode.useBatchQueries([BatchHotelHelloQuery]);
+Diode.useBatchQuery(BatchQuery);
 
 // Instead of two API for helloWorld and hotelDetail query,
 // we only specify one API that will be called with merged payload

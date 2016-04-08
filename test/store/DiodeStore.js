@@ -41,15 +41,15 @@ describe('DiodeStore', () => {
         }
       }
     ];
-    const responseMock = [
-      {
+    const responseMock = {
+      contentResource: {
         data: {
           SimpleSentence: {
             login: 'Masuk'
           }
         }
       }
-    ];
+    };
 
     const gqStub = sinon.stub(DiodeQueryRequest, 'getQueryRequests');
     const sqStub = sinon.stub(DiodeNetworkLayer.prototype, 'sendQueries');
@@ -132,22 +132,22 @@ describe('DiodeStore', () => {
       }
     };
 
-    const hotelDetailResponseMock = [
-      {
+    const hotelDetailResponseMock = {
+      hotelDetail: {
         data: {
           id: 1234,
           roomId: 5678
         }
       }
-    ];
-    const hotelRoomResponseMock = [
-      {
+    };
+    const hotelRoomResponseMock = {
+      hotelRoom: {
         data: {
           id: 5678,
           name: 'Deluxe Room'
         }
       }
-    ];
+    };
 
     const queryRequestsMock = [queryRequest1, queryRequest2];
     const queryRequestMock1 = [queryRequest1];
@@ -241,18 +241,20 @@ describe('DiodeStore', () => {
       type: batchQuery.type,
       resolve: batchQuery.resolve
     };
-    const batchResponseMock = [{
-      data: {
-        detail: {
-          id: 1234,
-          name: 'Hotel Rich'
-        },
-        room: {
-          id: 5678,
-          name: 'Deluxe Room'
+    const batchResponseMock = {
+      [DiodeQueryTypes.BATCH]: {
+        data: {
+          detail: {
+            id: 1234,
+            name: 'Hotel Rich'
+          },
+          room: {
+            id: 5678,
+            name: 'Deluxe Room'
+          }
         }
       }
-    }];
+    };
 
     const queryRequests = [queryRequest1, queryRequest2];
     const batchQueryRequests = [batchQueryRequest];
@@ -265,7 +267,7 @@ describe('DiodeStore', () => {
       opts
     ).returns(Promise.resolve(batchResponseMock));
 
-    Store.useBatchQueries([batchQuery]);
+    Store.useBatchQuery(batchQuery);
     Store.forceFetch(RootContainer, opts).then(props => {
       const expectedProps = {
         hotel: {

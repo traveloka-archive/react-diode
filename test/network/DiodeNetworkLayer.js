@@ -18,12 +18,46 @@ describe('DiodeNetworkLayer', () => {
 
   it('should be able to dispatch sendQuery via supplied network layer', () => {
     const network = new DiodeNetworkLayer();
-    const customNetworkLayer = { sendQueries: sinon.spy() };
+    const customNetworkLayer = { sendQueries: sinon.stub() };
     const queries = [{}, {}];
     const options = {};
 
+    customNetworkLayer.sendQueries.returns(Promise.resolve({}));
     network.injectNetworkLayer(customNetworkLayer);
     network.sendQueries(queries, options);
     customNetworkLayer.sendQueries.should.be.calledWith(queries, options);
+  });
+
+  it('should be able to inject query mock resolver', () => {
+    const network = new DiodeNetworkLayer();
+    const customNetworkLayer = { sendQueries: sinon.stub() };
+    const queries = [
+      {
+        type: 'shouldBeMocked'
+      },
+      {
+        type: 'shouldNotBeMocked'
+      }
+    ];
+    const filteredQueries = [
+      {
+        type: 'shouldNotBeMocked'
+      }
+    ];
+    const options = {};
+    const queryMockResolver = {
+      shouldBeMocked: sinon.stub()
+    };
+    customNetworkLayer.sendQueries.returns(Promise.resolve({}));
+    queryMockResolver.shouldBeMocked.returns({});
+
+    network.injectNetworkLayer(customNetworkLayer);
+    network.injectQueryMockResolver(queryMockResolver);
+    network.sendQueries(queries, options);
+    queryMockResolver.shouldBeMocked.should.be.calledWith(queries[0]);
+    customNetworkLayer.sendQueries.should.be.calledWith(
+      filteredQueries,
+      options
+    );
   });
 });

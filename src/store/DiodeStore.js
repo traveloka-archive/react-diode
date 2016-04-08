@@ -16,7 +16,8 @@ import {
 import type { DiodeRootContainer } from '../container/DiodeRootContainer';
 import type {
   BatchQueryDefinition,
-  NetworkLayer
+  NetworkLayer,
+  QueryMockResolver
 } from '../tools/DiodeTypes';
 import type {
   DiodeQueryRequest
@@ -41,6 +42,15 @@ class DiodeStore {
     networkLayer: NetworkLayer
   ): void {
     this._networkLayer.injectNetworkLayer(networkLayer);
+  }
+
+  /**
+   * @public
+   */
+  useMockQueries(
+    queryMockResolver: QueryMockResolver
+  ): void {
+    this._networkLayer.injectQueryMockResolver(queryMockResolver);
   }
 
   /**

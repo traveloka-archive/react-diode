@@ -41,6 +41,7 @@
   "dependencies": {
     "deep-extend": "^0.4.1",
     "isomorphic-fetch": "^2.2.1",
+    "lodash.find": "^4.3.0",
     "object-assign": "^4.0.1"
   },
   "peerDependencies": {

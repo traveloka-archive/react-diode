@@ -45,7 +45,7 @@
     "object-assign": "^4.0.1"
   },
   "peerDependencies": {
-    "react": "^0.14.7"
+    "react": "^15.0.1"
   },
   "devDependencies": {
     "babel-cli": "^6.6.5",
@@ -55,12 +55,15 @@
     "babel-preset-stage-1": "^6.5.0",
     "chai": "^3.5.0",
     "codecov": "^1.0.1",
+    "enzyme": "^2.2.0",
     "flow-bin": "^0.22.1",
     "marlint": "^1.5.3",
     "mocha": "^2.4.5",
     "nock": "^7.4.0",
     "nyc": "^6.1.1",
-    "react": "^0.14.7",
+    "react": "^15.0.1",
+    "react-addons-test-utils": "^15.0.1",
+    "react-dom": "^15.0.1",
     "sinon": "^1.17.3",
     "sinon-chai": "^2.8.0"
   },

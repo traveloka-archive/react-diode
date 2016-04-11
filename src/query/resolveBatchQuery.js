@@ -1,3 +1,5 @@
+import find from 'lodash.find';
+import objectAssign from 'object-assign';
 import type { DiodeQueryRequest } from './DiodeQueryRequest';
 
 /**
@@ -15,10 +17,15 @@ export default function resolveBatchQuery(
     /* istanbul ignore else */
     if (batchResponse.hasOwnProperty(queryType)) {
       const queryResponse = batchResponse[queryType];
-      // TODO use lodash?
-      const query = _findQueryByType(initialQueries, queryType);
+      const query = find(initialQueries, { type: queryType });
 
-      if (queryResponse && query) {
+      // Special treatment for __additional property in batch query response.
+      // This is used internally so only remove this if statement when you
+      // know what you're doing
+      if (queryType === '__additional') {
+        const specialResponse = { __additional: queryResponse };
+        objectAssign(responseMap, specialResponse);
+      } else if (queryResponse && query) {
         const { resolve, fragment } = query;
         responseMap[queryType] = resolve(queryResponse, fragment, options);
       }
@@ -26,14 +33,4 @@ export default function resolveBatchQuery(
   }
 
   return responseMap;
-}
-
-function _findQueryByType(queries, type) {
-  for (let i = 0; i < queries.length; i++) {
-    if (queries[i].type === type) {
-      return queries[i];
-    }
-  }
-
-  return null;
 }

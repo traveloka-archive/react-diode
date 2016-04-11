@@ -233,6 +233,10 @@ describe('DiodeStore', () => {
           },
           hotelRoom: {
             data: response.data.room
+          },
+          __additional: {
+            included: 'yes',
+            alsoIncluded: true
           }
         };
       }
@@ -277,6 +281,10 @@ describe('DiodeStore', () => {
         hotelRoom: {
           id: 5678,
           name: 'Deluxe Room'
+        },
+        __additional: {
+          included: 'yes',
+          alsoIncluded: true
         }
       };
 

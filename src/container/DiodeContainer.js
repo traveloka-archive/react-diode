@@ -21,6 +21,7 @@ export type DiodeContainerSpec = {
 }
 
 function createContainerComponent(Component, spec) {
+  /* istanbul ignore next */
   const componentName = Component.displayName || Component.name;
   const containerName = `Diode(${componentName})`;
 
@@ -54,6 +55,7 @@ function createContainer(
   Component,
   spec: DiodeContainerSpec = {}
 ): DiodeContainer {
+  /* istanbul ignore next */
   const componentName = Component.displayName || Component.name;
   const containerName = `Diode(${componentName})`;
   const query = new DiodeContainerQuery(spec.queries, spec.children);

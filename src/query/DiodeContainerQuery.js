@@ -66,6 +66,7 @@ class DiodeContainerQuery {
     children.forEach(child => {
       const childQueryMap = child.query.map;
 
+      /* istanbul ignore if */
       if (childQueryMap === null || childQueryMap === undefined) {
         return;
       }

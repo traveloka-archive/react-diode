@@ -53,6 +53,7 @@ class DiodeDefaultNetworkLayer {
       const apiUrl = `${this._baseApiEndpoint}${url}`;
       const fetchParams: FetchParams = { method, headers };
 
+      /* istanbul ignore else */
       if (typeof payload === 'object') {
         // we use JSON.stringify here because this is what most POST request
         // body looked like. GET requests are usually in form of query string

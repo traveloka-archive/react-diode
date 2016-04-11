@@ -37,19 +37,27 @@ describe('DiodeNetworkLayer', () => {
       },
       {
         type: 'shouldNotBeMocked'
+      },
+      {
+        type: 'shouldBeCheckedBeforeMocked'
       }
     ];
     const filteredQueries = [
       {
         type: 'shouldNotBeMocked'
+      },
+      {
+        type: 'shouldBeCheckedBeforeMocked'
       }
     ];
     const options = {};
     const queryMockResolver = {
-      shouldBeMocked: sinon.stub()
+      shouldBeMocked: sinon.stub(),
+      shouldBeCheckedBeforeMocked: sinon.stub()
     };
     customNetworkLayer.sendQueries.returns(Promise.resolve({}));
     queryMockResolver.shouldBeMocked.returns({});
+    queryMockResolver.shouldBeCheckedBeforeMocked.returns(null);
 
     network.injectNetworkLayer(customNetworkLayer);
     network.injectQueryMockResolver(queryMockResolver);

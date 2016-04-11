@@ -16,6 +16,18 @@ describe('DiodeStore', () => {
     const networkLayer = {};
     Store.injectNetworkLayer(networkLayer);
     net.should.be.calledWith(networkLayer);
+    net.restore();
+  });
+
+  it('should allow enabling query mock', () => {
+    const qmr = sinon.stub(
+      DiodeNetworkLayer.prototype,
+      'injectQueryMockResolver'
+    );
+    const queryMockResolver = {};
+    Store.useMockQueries(queryMockResolver);
+    qmr.should.be.calledWith(queryMockResolver);
+    qmr.restore();
   });
 
   it('should be able to send query via network layer', done => {

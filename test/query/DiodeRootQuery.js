@@ -6,6 +6,17 @@ import DiodeRootQuery from '../../src/query/DiodeRootQuery';
 chai.should();
 
 describe('DiodeRootQuery', () => {
+  it('should give access to container query via public method', () => {
+    const queries = {
+      cr: {
+        type: 'contentResource'
+      }
+    };
+    const containerQuery = new DiodeContainerQuery(queries);
+    const rootQuery = new DiodeRootQuery(containerQuery);
+    rootQuery.getContainerQuery().should.be.deep.equal(containerQuery);
+  });
+
   it('should replace value map via .setVariables()', () => {
     const queries = {
       cr: {

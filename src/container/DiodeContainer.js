@@ -25,7 +25,21 @@ function createContainerComponent(Component, spec) {
   const containerName = `Diode(${componentName})`;
 
   class DiodeContainer extends React.Component {
+    constructor(...args) {
+      super(...args);
+      this.wrapperInfo = spec.wrapperInfo;
+    }
+
     render() {
+
+      if (this.wrapperInfo) {
+        return (
+          <div {...this.wrapperInfo}>
+            <Component {...this.props} />
+          </div>
+        );
+      }
+
       return (
         <Component {...this.props} />
       );
@@ -38,7 +52,7 @@ function createContainerComponent(Component, spec) {
 
 function createContainer(
   Component,
-  spec: DiodeContainerSpec
+  spec: DiodeContainerSpec = {}
 ): DiodeContainer {
   const componentName = Component.displayName || Component.name;
   const containerName = `Diode(${componentName})`;
@@ -46,6 +60,7 @@ function createContainer(
 
   let Container;
   function ContainerConstructor(props, context) {
+    /* istanbul ignore else */
     if (!Container) {
       Container = createContainerComponent(Component, spec);
     }

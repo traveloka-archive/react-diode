@@ -234,4 +234,65 @@ describe('DiodeContainerQuery', () => {
     );
     warnStub.restore();
   });
+
+  it('should be able to inject children at runtime', () => {
+    const queries = {
+      cr: {
+        type: 'contentResource',
+        fragmentStructure: {
+          SimpleSentences: {
+            login: null,
+            logout: null
+          }
+        }
+      }
+    };
+    const children = [
+      {
+        query: new DiodeContainerQuery({
+          cr: {
+            type: 'contentResource',
+            fragmentStructure: {
+              SimpleSentences: {
+                night: null
+              }
+            }
+          }
+        })
+      },
+      {
+        query: new DiodeContainerQuery({
+          hotel: {
+            type: 'hotelDetail',
+            fragmentStructure: {
+              id: '$hotelDetailId'
+            }
+          }
+        })
+      }
+    ];
+
+    const expectedQueryMap = {
+      cr: {
+        type: 'contentResource',
+        fragmentStructure: {
+          SimpleSentences: {
+            login: null,
+            logout: null,
+            night: null
+          }
+        }
+      },
+      hotel: {
+        type: 'hotelDetail',
+        fragmentStructure: {
+          id: '$hotelDetailId'
+        }
+      }
+    };
+
+    const query = new DiodeContainerQuery(queries);
+    query.injectChildren(children);
+    query.map.should.be.deep.equal(expectedQueryMap);
+  });
 });

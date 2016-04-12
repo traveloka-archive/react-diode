@@ -16,7 +16,14 @@ class DiodeContainerQuery {
   // store distinct query type
   _queryTypeMap: DiodeQueryMap = {};
 
+  _queries: ?DiodeQueryMap;
+
+  _children: Array<DiodeContainer>;
+
   constructor(queries: ?DiodeQueryMap, children: ?Array<DiodeContainer>) {
+    this._queries = queries;
+    this._children = children || [];
+
     this._parseQueryTypeMap(queries);
     this._mergeChildQueryTypeMap(children);
     this._buildFinalQueryMap(queries, children);
@@ -24,6 +31,18 @@ class DiodeContainerQuery {
 
   getQueryTypeMap(): DiodeQueryMap {
     return this._queryTypeMap;
+  }
+
+  /**
+   * @internal
+   * @unstable
+   *
+   * Add child container dynamicly and rebuilt the query map
+   */
+  injectChildren(children: Array<DiodeContainer>) {
+    this._children = this._children.concat(children);
+    this._mergeChildQueryTypeMap(children);
+    this._buildFinalQueryMap(this._queries, this._children);
   }
 
   /**

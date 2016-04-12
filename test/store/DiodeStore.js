@@ -30,6 +30,18 @@ describe('DiodeStore', () => {
     qmr.restore();
   });
 
+  it('should call getQueryRequests with correct arguments', () => {
+    const RootContainer = {};
+    const options = {};
+    const getQueryRequests = sinon.stub(DiodeQueryRequest, 'getQueryRequests');
+    const fetchQueries = sinon.stub(Store, '_fetchQueries');
+    fetchQueries.returns(Promise.resolve({}));
+    Store.forceFetch(RootContainer, options);
+    getQueryRequests.should.be.calledWithExactly(RootContainer, options);
+    getQueryRequests.restore();
+    fetchQueries.restore();
+  });
+
   it('should be able to send query via network layer', done => {
     const RootContainer = {
       query: {

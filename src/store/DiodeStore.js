@@ -77,7 +77,7 @@ class DiodeStore {
     RootContainer: DiodeRootContainer,
     options: any
   ): Promise {
-    const queries = getQueryRequests(RootContainer);
+    const queries = getQueryRequests(RootContainer, options);
     return this._fetchQueries(queries, options).then(response => {
       return resolveContainerProps(response, RootContainer);
     });

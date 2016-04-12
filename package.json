@@ -1,6 +1,6 @@
 {
   "name": "react-diode",
-  "version": "0.2.0-beta.6",
+  "version": "0.2.0-beta.7",
   "description": "Endpoint agnostic, unidirectional data fetching for React applications",
   "main": "lib/DiodePublic.js",
   "files": [

@@ -5,12 +5,9 @@ import objectAssign from 'object-assign';
 import resolveContainerProps from '../container/resolveContainerProps';
 import DiodeNetworkLayer from '../network/DiodeNetworkLayer';
 import resolvePendingQueries from '../query/resolvePendingQueries';
-import filterBatchQuery from '../query/filterBatchQuery';
 import resolveQueryResponse from '../query/resolveQueryResponse';
-
-import {
-  getQueryRequests
-} from '../query/DiodeQueryRequest';
+import { filterBatchQuery } from '../query/filterBatchQuery';
+import { getQueryRequests } from '../query/DiodeQueryRequest';
 
 import type { DiodeRootContainer } from '../container/DiodeRootContainer';
 import type {
@@ -104,7 +101,7 @@ class DiodeStore {
     let queries = initialQueries;
 
     if (this._batchQueryEnabled) {
-      queries = filterBatchQuery(queries, this._batchQuery);
+      queries = filterBatchQuery(queries, this._batchQuery, options);
     }
 
     return this._networkLayer.sendQueries(queries, options)

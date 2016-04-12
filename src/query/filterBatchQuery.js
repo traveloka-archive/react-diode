@@ -12,7 +12,7 @@ import type { BatchQueryDefinition } from '../tools/DiodeTypes';
  *
  * If BatchQuery types is incomplete, send the queries as normal query
  */
-export default function filterBatchQuery(
+export function filterBatchQuery(
   queries: Array<DiodeQueryRequest>,
   batchQuery: BatchQueryDefinition,
   options: any

@@ -1,5 +1,5 @@
 import { describe, it } from 'mocha';
-import filterBatchQuery from '../../src/query/filterBatchQuery';
+import { filterBatchQuery } from '../../src/query/filterBatchQuery';
 import chai from 'chai';
 import sinon from 'sinon';
 

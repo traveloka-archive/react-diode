@@ -6,6 +6,7 @@ import Store from '../../src/store/DiodeStore';
 import DiodeNetworkLayer from '../../src/network/DiodeNetworkLayer';
 import * as DiodeQueryRequest from '../../src/query/DiodeQueryRequest';
 import DiodeQueryTypes from '../../src/query/DiodeQueryTypes';
+import * as FilterBatchQuery from '../../src/query/filterBatchQuery';
 
 chai.should();
 chai.use(sinonChai);
@@ -289,6 +290,7 @@ describe('DiodeStore', () => {
 
     const gqStub = sinon.stub(DiodeQueryRequest, 'getQueryRequests');
     const sqStub = sinon.stub(DiodeNetworkLayer.prototype, 'sendQueries');
+    const fbqSpy = sinon.spy(FilterBatchQuery, 'filterBatchQuery');
     gqStub.withArgs(RootContainer).returns(queryRequests);
     sqStub.withArgs(
       batchQueryRequests,
@@ -312,7 +314,13 @@ describe('DiodeStore', () => {
         }
       };
 
+      fbqSpy.should.be.calledWithExactly(
+        queryRequests,
+        batchQuery,
+        opts
+      );
       props.should.be.deep.equal(expectedProps);
+      fbqSpy.restore();
       gqStub.restore();
       sqStub.restore();
       done();

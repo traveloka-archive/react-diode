@@ -47,6 +47,23 @@ describe('DiodeContainer', () => {
     c.find('.test-component').should.have.length(1);
   });
 
+  it('should be able to override wrapperInfo via props', () => {
+    const Container = create(Component, {
+      wrapperInfo: {
+        className: 'wrapper wrapper-small',
+        'data-blocks-id': 1,
+        'data-blocks-type': 'block'
+      }
+    });
+    const wrapperInfoFromProps = {
+      className: 'new-wrapper'
+    };
+    const c = render(<Container wrapperInfo={wrapperInfoFromProps} />);
+    c.find('.wrapper.wrapper-small').should.have.length(0);
+    c.find('.new-wrapper').should.have.length(1);
+    c.find('.test-component').should.have.length(1);
+  });
+
   it('should be able to set wrapperInfo', () => {
     const Container = create(Component, {
       wrapperInfo: { className: 'wrapper-old' }

@@ -32,10 +32,12 @@ function createContainerComponent(Component, spec) {
     }
 
     render() {
+      const { props, wrapperInfo } = this;
+      const wrapper = props.wrapperInfo ? props.wrapperInfo : wrapperInfo;
 
-      if (this.wrapperInfo) {
+      if (wrapper) {
         return (
-          <div {...this.wrapperInfo}>
+          <div {...wrapper}>
             <Component {...this.props} />
           </div>
         );

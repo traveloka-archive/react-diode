@@ -26,9 +26,8 @@ describe('filterBatchQuery', () => {
       }
     ];
     const batchQuery = {
-      queryTypes: ['a', 'c'],
       type: 'batch',
-      name: 'x',
+      queryTypes: ['a', 'c'],
       request(queries, options) {
         return {
           url: '/api/v1/batch',
@@ -82,8 +81,8 @@ describe('filterBatchQuery', () => {
       }
     ];
     const batchQuery = {
-      queryTypes: ['a', 'b'],
-      name: 'x'
+      type: 'batch',
+      queryTypes: ['a', 'b']
     };
     const expectedQueries = [
       {
@@ -91,6 +90,53 @@ describe('filterBatchQuery', () => {
         payload: {
           hello: 'world'
         }
+      }
+    ];
+
+    filterBatchQuery(
+      queries,
+      batchQuery
+    ).should.deep.equal(expectedQueries);
+  });
+
+  it('should include incomplete batch query types if forceMerge', () => {
+    const resolveSpy = sinon.spy();
+    const queries = [
+      {
+        type: 'a',
+        payload: {
+          hello: 'world'
+        }
+      }
+    ];
+    const batchQuery = {
+      type: 'batch',
+      forceMerge: true,
+      queryTypes: ['a', 'b'],
+      request(queries, options) {
+        const payload = {};
+        queries.forEach(query => {
+          payload[query.type] = query.payload;
+        });
+        return {
+          url: '/api/v1/batch',
+          method: 'post',
+          payload
+        };
+      },
+      resolve: resolveSpy
+    };
+    const expectedQueries = [
+      {
+        type: 'batch',
+        url: '/api/v1/batch',
+        method: 'post',
+        payload: {
+          a: {
+            hello: 'world'
+          }
+        },
+        resolve: resolveSpy
       }
     ];
 

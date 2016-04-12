@@ -18,13 +18,17 @@ export function filterBatchQuery(
   options: any
 ): Array<DiodeQueryRequest> {
   let filteredQueries = [];
-  const { queryTypes } = batchQuery;
+  const { queryTypes, forceMerge } = batchQuery;
 
   const batchQueryList = queryTypes
   .map(type => find(queries, { type }))
   .filter(query => Boolean(query));
 
-  if (batchQueryList.length === queryTypes.length) {
+  // We need to make sure the queries listed has same length as
+  // query requirements in queryTypes. We can use forceMerge to bypass
+  // this checking but be warned that by using forceMerge, you can no
+  // longer rely on query requirements order in request() method
+  if (batchQueryList.length === queryTypes.length || forceMerge) {
     const batchQueryRequest = createBatchQueryRequest(
       batchQuery,
       batchQueryList,

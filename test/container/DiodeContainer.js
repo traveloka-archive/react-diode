@@ -83,4 +83,30 @@ describe('DiodeContainer', () => {
     const xy = Container.getWrapperInfo('data-x-y');
     xy.should.be.equal('value');
   });
+
+  it('should be able to get original component', () => {
+    const Container = create(Component);
+    Container.getComponent().should.be.deep.equal(Component);
+  });
+
+  it('should be able to get component children', () => {
+    const ChildContainer = create(Component, {
+      queries: {
+        hello: {
+          fragmentStructure: {
+            x: 'y'
+          }
+        }
+      }
+    });
+    const Container = create(Component, {
+      children: [ChildContainer]
+    });
+    Container.getChildren().should.be.deep.equal([ChildContainer]);
+  });
+
+  it('should return empty array if no children defined in spec', () => {
+    const Container = create(Component);
+    Container.getChildren().should.be.deep.equal([]);
+  });
 });

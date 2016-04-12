@@ -79,6 +79,18 @@ function createContainer(
     return spec.wrapperInfo[key];
   };
 
+  ContainerConstructor.getComponent = function getComponent() {
+    return Component;
+  };
+
+  ContainerConstructor.getChildren = function getChildren() {
+    if (spec.children && spec.children.length) {
+      return spec.children;
+    } else {
+      return [];
+    }
+  };
+
   ContainerConstructor.query = query;
   ContainerConstructor.displayName = containerName;
   ContainerConstructor.componentName = componentName;

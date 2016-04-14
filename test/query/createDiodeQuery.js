@@ -15,6 +15,9 @@ describe('createDiodeQuery', () => {
       SimpleSentences: {
         login: null
       }
+    }, {
+      a: 'b',
+      1: 2
     });
 
     const expectedStructure = {
@@ -22,8 +25,13 @@ describe('createDiodeQuery', () => {
         login: null
       }
     };
+    const expectedParams = {
+      a: 'b',
+      1: 2
+    };
 
     query.fragmentStructure.should.be.deep.equal(expectedStructure);
+    query.params.should.be.deep.equal(expectedParams);
     query.type.should.be.equal(QueryShape.type);
   });
 

@@ -45,6 +45,13 @@ describe('DiodeContainerQuery', () => {
           SimpleSentences: {
             login: null
           }
+        },
+        params: {
+          a: {
+            b: {
+              c: 'd'
+            }
+          }
         }
       },
       cr: {
@@ -52,6 +59,11 @@ describe('DiodeContainerQuery', () => {
         fragmentStructure: {
           SimpleSentences: {
             logout: null
+          }
+        },
+        params: {
+          a: {
+            b: 'c'
           }
         }
       }
@@ -65,6 +77,11 @@ describe('DiodeContainerQuery', () => {
             login: null,
             logout: null
           }
+        },
+        params: {
+          a: {
+            b: 'c'
+          }
         }
       },
       cr: {
@@ -73,6 +90,11 @@ describe('DiodeContainerQuery', () => {
           SimpleSentences: {
             login: null,
             logout: null
+          }
+        },
+        params: {
+          a: {
+            b: 'c'
           }
         }
       }

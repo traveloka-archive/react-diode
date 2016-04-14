@@ -64,6 +64,7 @@ class DiodeContainerQuery {
         const { fragmentStructure: existingFragment } = existingQueryType;
         const { fragmentStructure: newFragment } = query;
         deepExtend(existingFragment, newFragment);
+        deepExtend(existingQueryType.params, query.params);
       } else {
         this._queryTypeMap[query.type] = query;
       }

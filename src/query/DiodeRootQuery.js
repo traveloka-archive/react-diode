@@ -53,6 +53,7 @@ class DiodeRootQuery {
     return Object.keys(queryTypeMap).map(queryType => {
       const query = queryTypeMap[queryType];
       query.fragment = this._compileFragmentKeys(query.fragmentStructure);
+      query.params = this._compileFragmentKeys(query.paramsStructure);
       return query;
     });
   }

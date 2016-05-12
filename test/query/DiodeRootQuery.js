@@ -78,6 +78,9 @@ describe('DiodeRootQuery', () => {
             numNight: '1 night',
             extraBed: null
           }
+        },
+        paramsStructure: {
+          parsed: '$isParamsParsed'
         }
       }
     };
@@ -104,13 +107,19 @@ describe('DiodeRootQuery', () => {
             numNight: '1 night',
             extraBed: null
           }
+        },
+        paramsStructure: {
+          parsed: '$isParamsParsed'
+        },
+        params: {
+          parsed: true
         }
       }
     ];
 
     const query = new DiodeContainerQuery(queries);
     const rootQuery = new DiodeRootQuery(query);
-    rootQuery.setVariables({ loginStr: 0 });
+    rootQuery.setVariables({ loginStr: 0, isParamsParsed: true });
     rootQuery.compile().should.be.deep.equal(expectedQueries);
   });
 });

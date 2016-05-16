@@ -35,6 +35,31 @@ describe('createDiodeQuery', () => {
     query.type.should.be.equal(QueryShape.type);
   });
 
+  it('should include default params structure', () => {
+    const QueryShape = {
+      type: 'contentResource',
+      request() {},
+      resolve() {}
+    };
+    const query = createDiodeQuery(QueryShape, {
+      SimpleSentences: {
+        login: null
+      }
+    });
+
+    const expectedFragmentStructure = {
+      SimpleSentences: {
+        login: null
+      }
+    };
+    // default params structure
+    const expectedParamsStructure = {};
+
+    query.fragmentStructure.should.be.deep.equal(expectedFragmentStructure);
+    query.paramsStructure.should.be.deep.equal(expectedParamsStructure);
+    query.type.should.be.equal(QueryShape.type);
+  });
+
   it('should throw error if query shape doesn\'t have a type', () => {
     const QueryWithNoType = {
       request() {},

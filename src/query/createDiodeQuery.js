@@ -6,7 +6,7 @@ import type { QueryDefinition, DiodeQuery } from '../tools/DiodeTypes';
 function createDiodeQuery(
   Query: QueryDefinition,
   fragmentStructure: any,
-  paramsStructure: any
+  paramsStructure: any = {}
 ): DiodeQuery {
   if (typeof Query.type !== 'string') {
     throw new TypeError('Expected query definition to have query type');

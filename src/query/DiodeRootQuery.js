@@ -63,12 +63,15 @@ class DiodeRootQuery {
    * If an object is found, recursively iterate the object keys
    */
   _compileFragmentKeys(rawFragment: any): any {
+
     return Object.keys(rawFragment).reduce((fragment, key) => {
+      const parsedKey = this._compileFragmentValue(key);
+
       // typeof null === 'object'
       if (typeof rawFragment[key] === 'object' && rawFragment[key] !== null) {
-        fragment[key] = this._compileFragmentKeys(rawFragment[key]);
+        fragment[parsedKey] = this._compileFragmentKeys(rawFragment[key]);
       } else {
-        fragment[key] = this._compileFragmentValue(rawFragment[key]);
+        fragment[parsedKey] = this._compileFragmentValue(rawFragment[key]);
       }
 
       return fragment;

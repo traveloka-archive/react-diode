@@ -122,4 +122,44 @@ describe('DiodeRootQuery', () => {
     rootQuery.setVariables({ loginStr: 0, isParamsParsed: true });
     rootQuery.compile().should.be.deep.equal(expectedQueries);
   });
+
+  it('can use variable in root key of fragment structure', () => {
+    const queries = {
+      cr: {
+        type: 'contentResource',
+        fragmentStructure: {
+          '$SimpleSentences': {
+            login: '$loginStr',
+            logout: '$logoutStr'
+          }
+        },
+        paramsStructure: {}
+      }
+    };
+
+    const expectedQueries = [
+      {
+        type: 'contentResource',
+        fragmentStructure: {
+          '$SimpleSentences': {
+            login: '$loginStr',
+            logout: '$logoutStr'
+          }
+        },
+        fragment: {
+          SimpleSentences: {
+            login: 0,
+            logout: '$logoutStr'
+          }
+        },
+        paramsStructure: {},
+        params: {}
+      }
+    ];
+
+    const query = new DiodeContainerQuery(queries);
+    const rootQuery = new DiodeRootQuery(query);
+    rootQuery.setVariables({ SimpleSentences: 'SimpleSentences', loginStr: 0, isParamsParsed: true });
+    rootQuery.compile().should.be.deep.equal(expectedQueries);
+  });
 });

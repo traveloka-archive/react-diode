@@ -28,7 +28,12 @@ export function filterBatchQuery(
   // query requirements in queryTypes. We can use forceMerge to bypass
   // this checking but be warned that by using forceMerge, you can no
   // longer rely on query requirements order in request() method
-  if (batchQueryList.length === queryTypes.length || forceMerge) {
+  if (
+    (batchQueryList.length === queryTypes.length) ||
+    // if forceMerge is enabled, make sure at least one query satisfied
+    // the requirement to prevent zero query length
+    (forceMerge && batchQueryList.length > 0)
+  ) {
     const batchQueryRequest = createBatchQueryRequest(
       batchQuery,
       batchQueryList,

@@ -23,6 +23,7 @@ describe('DiodeDefaultNetworkLayer', () => {
       type: 'contentResource',
       url: '/v1/content',
       method: 'post',
+      headers: {},
       resolve(response, fragment, options) {
         return response.data;
       },
@@ -36,6 +37,7 @@ describe('DiodeDefaultNetworkLayer', () => {
       type: 'hotelDetail',
       url: '/v2/hotel/detail/1234',
       method: 'get',
+      headers: {},
       resolve(response, fragment, options) {
         return response.data;
       }

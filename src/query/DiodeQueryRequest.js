@@ -61,13 +61,15 @@ export function createPendingQueryRequest(
 export function createQueryRequest(
   url: string,
   method: string,
-  payload: any
+  payload: any,
+  headers: any = {}
 ): QueryRequestInfo {
   return {
     pending: false,
     url,
     method,
-    payload
+    payload,
+    headers
   };
 }
 

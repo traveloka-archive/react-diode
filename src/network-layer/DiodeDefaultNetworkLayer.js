@@ -51,7 +51,13 @@ class DiodeDefaultNetworkLayer {
       const headers = options.headers ? options.headers : this._defaultHeaders;
       const { url, method, payload } = query;
       const apiUrl = `${this._baseApiEndpoint}${url}`;
-      const fetchParams: FetchParams = { method, headers };
+      const fetchParams: FetchParams = {
+        method,
+        headers: {
+          ...headers,
+          ...query.headers
+        }
+      };
 
       /* istanbul ignore else */
       if (typeof payload === 'object') {

@@ -12,17 +12,35 @@ chai.should();
 chai.use(sinonChai);
 
 describe('DiodeQueryRequest', () => {
-  it('should be able to create a query request', () => {
+  it('should be able to create a query request with default header', () => {
     const url = '/api/v1/content';
     const method = 'post';
     const payload = { text: 'hello' };
+    const headers = {};
 
     const request = createQueryRequest(url, method, payload);
     request.should.be.deep.equal({
       pending: false,
       url,
       method,
-      payload
+      payload,
+      headers
+    });
+  });
+
+  it('should be able to create a query request with custom header', () => {
+    const url = '/api/v1/content';
+    const method = 'post';
+    const payload = { text: 'hello' };
+    const headers = { 'X-Token': 'SECRET_TOKEN' };
+
+    const request = createQueryRequest(url, method, payload, headers);
+    request.should.be.deep.equal({
+      pending: false,
+      url,
+      method,
+      payload,
+      headers
     });
   });
 

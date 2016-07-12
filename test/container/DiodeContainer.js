@@ -17,6 +17,7 @@ describe('DiodeContainer', () => {
     const Container = create(Component, {
       queries: {
         hello: {
+          type: 'HelloQuery',
           fragmentStructure: {
             world: null
           }
@@ -93,6 +94,7 @@ describe('DiodeContainer', () => {
     const ChildContainer = create(Component, {
       queries: {
         hello: {
+          type: 'HelloQuery',
           fragmentStructure: {
             x: 'y'
           }

@@ -30,7 +30,7 @@ describe('DiodeRootQuery', () => {
       }
     };
 
-    const query = new DiodeContainerQuery(queries);
+    const query = new DiodeContainerQuery('TestComponent', queries);
     const rootQuery = new DiodeRootQuery(query);
     rootQuery.setVariables({
       loginStr: 'none',
@@ -58,7 +58,7 @@ describe('DiodeRootQuery', () => {
       }
     };
 
-    const query = new DiodeContainerQuery(queries);
+    const query = new DiodeContainerQuery('TestComponent', queries);
     const rootQuery = new DiodeRootQuery(query);
     rootQuery.setVariables({ loginStr: 'none' });
     rootQuery.setVariables({ loginStr: 'test' });
@@ -117,7 +117,7 @@ describe('DiodeRootQuery', () => {
       }
     ];
 
-    const query = new DiodeContainerQuery(queries);
+    const query = new DiodeContainerQuery('TestComponent', queries);
     const rootQuery = new DiodeRootQuery(query);
     rootQuery.setVariables({ loginStr: 0, isParamsParsed: true });
     rootQuery.compile().should.be.deep.equal(expectedQueries);
@@ -157,7 +157,7 @@ describe('DiodeRootQuery', () => {
       }
     ];
 
-    const query = new DiodeContainerQuery(queries);
+    const query = new DiodeContainerQuery('TestComponent', queries);
     const rootQuery = new DiodeRootQuery(query);
     rootQuery.setVariables({ SimpleSentences: 'SimpleSentences', loginStr: 0, isParamsParsed: true });
     rootQuery.compile().should.be.deep.equal(expectedQueries);

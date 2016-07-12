@@ -33,8 +33,20 @@ describe('DiodeContainerQuery', () => {
       }
     };
 
-    const query = new DiodeContainerQuery(queries);
+    const query = new DiodeContainerQuery('TestComponent', queries);
     query.map.should.be.deep.equal(expectedQueryMap);
+  });
+
+  it('should throw error for invalid query type', () => {
+    const queries = {
+      cr: {
+        just: 'random',
+        object: 'passed'
+      }
+    };
+
+    const queryCreation = () => new DiodeContainerQuery('TestComponent', queries);
+    queryCreation.should.throw('Invalid query type in query key cr at component TestComponent');
   });
 
   it('should group distinct query type', () => {
@@ -100,7 +112,7 @@ describe('DiodeContainerQuery', () => {
       }
     };
 
-    const query = new DiodeContainerQuery(queries);
+    const query = new DiodeContainerQuery('TestComponent', queries);
     query.map.should.be.deep.equal(expectedQueryMap);
   });
 
@@ -118,7 +130,8 @@ describe('DiodeContainerQuery', () => {
     };
     const children = [
       {
-        query: new DiodeContainerQuery({
+        componentName: 'FirstChildComponent',
+        query: new DiodeContainerQuery('FirstChildComponent', {
           cr: {
             type: 'contentResource',
             fragmentStructure: {
@@ -130,7 +143,8 @@ describe('DiodeContainerQuery', () => {
         })
       },
       {
-        query: new DiodeContainerQuery({
+        componentName: 'SecondChildComponent',
+        query: new DiodeContainerQuery('SecondChildComponent', {
           hotel: {
             type: 'hotelDetail',
             fragmentStructure: {
@@ -160,7 +174,7 @@ describe('DiodeContainerQuery', () => {
       }
     };
 
-    const query = new DiodeContainerQuery(queries, children);
+    const query = new DiodeContainerQuery('TestComponent', queries, children);
     query.map.should.be.deep.equal(expectedQueryMap);
   });
 
@@ -178,7 +192,8 @@ describe('DiodeContainerQuery', () => {
     };
     const children = [
       {
-        query: new DiodeContainerQuery({
+        componentName: 'ChildComponent',
+        query: new DiodeContainerQuery('ChildComponent', {
           content: {
             type: 'contentResource',
             fragmentStructure: {
@@ -214,7 +229,7 @@ describe('DiodeContainerQuery', () => {
       }
     };
 
-    const query = new DiodeContainerQuery(queries, children);
+    const query = new DiodeContainerQuery('TestComponent', queries, children);
     query.map.should.be.deep.equal(expectedQueryMap);
   });
 
@@ -233,7 +248,8 @@ describe('DiodeContainerQuery', () => {
     };
     const children = [
       {
-        query: new DiodeContainerQuery({
+        componentName: 'FaultyComponent',
+        query: new DiodeContainerQuery('FaultyComponent', {
           cr: {
             type: 'hotelDetail',
             fragmentStructure: {
@@ -247,11 +263,13 @@ describe('DiodeContainerQuery', () => {
     ];
 
     /* eslint no-unused-vars: 0 */
-    const query = new DiodeContainerQuery(queries, children);
+    const query = new DiodeContainerQuery('TestComponent', queries, children);
     warnStub.should.be.calledWithExactly(
-      'Found same query key (%s) with different type (%s and %s)',
+      'Different query type for same query key %s: %s (%s) and %s (%s)',
       'cr',
+      'TestComponent',
       'contentResource',
+      'FaultyComponent',
       'hotelDetail'
     );
     warnStub.restore();
@@ -271,7 +289,8 @@ describe('DiodeContainerQuery', () => {
     };
     const children = [
       {
-        query: new DiodeContainerQuery({
+        componentName: 'FirstChildComponent',
+        query: new DiodeContainerQuery('FirstChildComponent', {
           cr: {
             type: 'contentResource',
             fragmentStructure: {
@@ -283,7 +302,8 @@ describe('DiodeContainerQuery', () => {
         })
       },
       {
-        query: new DiodeContainerQuery({
+        componentName: 'SecondChildComponent',
+        query: new DiodeContainerQuery('SecondChildComponent', {
           hotel: {
             type: 'hotelDetail',
             fragmentStructure: {
@@ -313,7 +333,7 @@ describe('DiodeContainerQuery', () => {
       }
     };
 
-    const query = new DiodeContainerQuery(queries);
+    const query = new DiodeContainerQuery('TestComponent', queries);
     query.injectChildren(children);
     query.map.should.be.deep.equal(expectedQueryMap);
   });

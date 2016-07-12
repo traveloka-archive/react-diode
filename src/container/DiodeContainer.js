@@ -60,7 +60,7 @@ function createContainer(
   /* istanbul ignore next */
   const componentName = Component.displayName || Component.name;
   const containerName = `Diode(${componentName})`;
-  const query = new DiodeContainerQuery(spec.queries, spec.children);
+  const query = new DiodeContainerQuery(componentName, spec.queries, spec.children);
 
   let Container;
   function ContainerConstructor(props, context) {

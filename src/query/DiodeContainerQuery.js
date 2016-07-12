@@ -20,7 +20,8 @@ class DiodeContainerQuery {
 
   _children: Array<DiodeContainer>;
 
-  constructor(queries: ?DiodeQueryMap, children: ?Array<DiodeContainer>) {
+  constructor(componentName: string, queries: ?DiodeQueryMap, children: ?Array<DiodeContainer>) {
+    this._componentName = componentName;
     this._queries = queries;
     this._children = children || [];
 
@@ -65,8 +66,10 @@ class DiodeContainerQuery {
         const { fragmentStructure: newFragment } = query;
         deepExtend(existingFragment, newFragment);
         deepExtend(existingQueryType.params, query.params);
-      } else {
+      } else if (query.type) {
         this._queryTypeMap[query.type] = query;
+      } else {
+        throw new Error(`Invalid query type in query key ${key} at component ${this._componentName}`);
       }
     });
   }
@@ -138,10 +141,8 @@ class DiodeContainerQuery {
 
         if (existingQuery && existingQuery.type !== childQuery.type) {
           return console.warn( // eslint-disable-line no-console
-            'Found same query key (%s) with different type (%s and %s)',
-            key,
-            existingQuery.type,
-            childQuery.type
+            'Different query type for same query key %s: %s (%s) and %s (%s)',
+            key, this._componentName, existingQuery.type, child.componentName, childQuery.type
           );
         }
 

@@ -3,6 +3,7 @@
  */
 import React from 'react';
 import objectAssign from 'object-assign';
+import hoistStatics from 'hoist-non-react-statics';
 import DiodeContainerQuery from '../query/DiodeContainerQuery';
 import type { DiodeQueryMap } from '../tools/DiodeTypes';
 
@@ -50,7 +51,7 @@ function createContainerComponent(Component, spec) {
   }
 
   DiodeContainer.displayName = containerName;
-  return DiodeContainer;
+  return hoistStatics(DiodeContainer, Component);
 }
 
 function createContainer(

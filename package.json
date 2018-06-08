@@ -40,7 +40,7 @@
   "homepage": "https://github.com/traveloka/react-diode#readme",
   "dependencies": {
     "deep-extend": "^0.4.1",
-    "hoist-non-react-statics": "^1.2.0",
+    "hoist-non-react-statics": "^2.5.0",
     "lodash.find": "^4.3.0",
     "object-assign": "^4.0.1"
   },
@@ -60,6 +60,7 @@
     "codecov": "^1.0.1",
     "enzyme": "^2.2.0",
     "flow-bin": "^0.22.1",
+    "isomorphic-fetch": "^2.2.1",
     "marlint": "^1.5.3",
     "mocha": "^2.4.5",
     "nock": "^7.4.0",
@@ -68,7 +69,6 @@
     "react-addons-test-utils": "^15.0.1",
     "react-dom": "^15.0.1",
     "sinon": "^1.17.3",
-    "isomorphic-fetch": "^2.2.1",
     "sinon-chai": "^2.8.0"
   },
   "marlint": {

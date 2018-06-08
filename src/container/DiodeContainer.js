@@ -96,7 +96,7 @@ function createContainer(
   ContainerConstructor.displayName = containerName;
   ContainerConstructor.componentName = componentName;
 
-  return ContainerConstructor;
+  return hoistStatics(ContainerConstructor, Component);
 }
 
 module.exports = {

@@ -8,7 +8,7 @@ import DiodeContainerQuery from '../../src/query/DiodeContainerQuery';
 chai.should();
 
 const Component = props => {
-  return <div className='test-component' />;
+  return <div className="test-component" />;
 };
 Component.displayName = 'TestComponent';
 
@@ -19,10 +19,10 @@ describe('DiodeContainer', () => {
         hello: {
           type: 'HelloQuery',
           fragmentStructure: {
-            world: null
-          }
-        }
-      }
+            world: null,
+          },
+        },
+      },
     });
     Container.query.should.be.instanceof(DiodeContainerQuery);
     Container.displayName.should.be.equal('Diode(TestComponent)');
@@ -40,8 +40,8 @@ describe('DiodeContainer', () => {
       wrapperInfo: {
         className: 'wrapper wrapper-small',
         'data-blocks-id': 1,
-        'data-blocks-type': 'block'
-      }
+        'data-blocks-type': 'block',
+      },
     });
     const c = render(<Container />);
     c.find('.wrapper.wrapper-small').should.have.length(1);
@@ -53,11 +53,11 @@ describe('DiodeContainer', () => {
       wrapperInfo: {
         className: 'wrapper wrapper-small',
         'data-blocks-id': 1,
-        'data-blocks-type': 'block'
-      }
+        'data-blocks-type': 'block',
+      },
     });
     const wrapperInfoFromProps = {
-      className: 'new-wrapper'
+      className: 'new-wrapper',
     };
     const c = render(<Container wrapperInfo={wrapperInfoFromProps} />);
     c.find('.wrapper.wrapper-small').should.have.length(0);
@@ -67,10 +67,10 @@ describe('DiodeContainer', () => {
 
   it('should be able to set wrapperInfo', () => {
     const Container = create(Component, {
-      wrapperInfo: { className: 'wrapper-old' }
+      wrapperInfo: { className: 'wrapper-old' },
     });
     Container.setWrapperInfo({
-      className: 'wrapper-new'
+      className: 'wrapper-new',
     });
     const c = render(<Container />);
     c.find('.wrapper-old').should.have.length(0);
@@ -79,7 +79,7 @@ describe('DiodeContainer', () => {
 
   it('should be able to get wrapperInfo', () => {
     const Container = create(Component, {
-      wrapperInfo: { 'data-x-y': 'value' }
+      wrapperInfo: { 'data-x-y': 'value' },
     });
     const xy = Container.getWrapperInfo('data-x-y');
     xy.should.be.equal('value');
@@ -96,13 +96,13 @@ describe('DiodeContainer', () => {
         hello: {
           type: 'HelloQuery',
           fragmentStructure: {
-            x: 'y'
-          }
-        }
-      }
+            x: 'y',
+          },
+        },
+      },
     });
     const Container = create(Component, {
-      children: [ChildContainer]
+      children: [ChildContainer],
     });
     Container.getChildren().should.be.deep.equal([ChildContainer]);
   });
@@ -110,5 +110,34 @@ describe('DiodeContainer', () => {
   it('should return empty array if no children defined in spec', () => {
     const Container = create(Component);
     Container.getChildren().should.be.deep.equal([]);
+  });
+
+  it('should merge queries when container is wrapped with another container', () => {
+    const ChildContainer = create(Component, {
+      queries: {
+        child: { type: 'childQuery' },
+      },
+    });
+
+    const InnerContainer = create(Component, {
+      children: [ChildContainer],
+      queries: {
+        inner: { type: 'innerQuery' },
+      },
+    });
+
+    const Container = create(InnerContainer, {
+      queries: {
+        outer: { type: 'outerQuery' },
+      },
+    });
+
+    const expectedQuery = {
+      child: { type: 'childQuery' },
+      inner: { type: 'innerQuery' },
+      outer: { type: 'outerQuery' },
+    };
+
+    Container.query.map.should.be.deep.equal(expectedQuery);
   });
 });

@@ -1,19 +1,19 @@
-import DiodeStore from './store/DiodeStore';
-import DiodeContainer from './container/DiodeContainer';
-import DiodeRootContainer from './container/DiodeRootContainer';
-import DiodeQueryTypes from './query/DiodeQueryTypes';
-import { createDiodeQuery } from './query/createDiodeQuery';
+import DiodeStore from "./store/DiodeStore";
+import { createContainer } from "./container/DiodeContainer";
+import { createRootContainer } from "./container/DiodeRootContainer";
+import DiodeQueryTypes from "./query/DiodeQueryTypes";
+import { createDiodeQuery } from "./query/createDiodeQuery";
 import {
   createQueryRequest,
   createPendingQueryRequest
-} from './query/DiodeQueryRequest';
+} from "./query/DiodeQueryRequest";
 
 const DiodePublic = {
   Store: DiodeStore,
   QueryTypes: DiodeQueryTypes,
 
-  createContainer: DiodeContainer.create,
-  createRootContainer: DiodeRootContainer.create,
+  createContainer,
+  createRootContainer,
   createQuery: createDiodeQuery,
   queryRequest: createQueryRequest,
   waitForQuery: createPendingQueryRequest,
@@ -22,4 +22,4 @@ const DiodePublic = {
   injectNetworkLayer: DiodeStore.injectNetworkLayer.bind(DiodeStore)
 };
 
-module.exports = DiodePublic;
+export default DiodePublic;

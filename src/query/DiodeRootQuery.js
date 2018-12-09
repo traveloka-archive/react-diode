@@ -1,9 +1,9 @@
 /**
  * @flow
  */
-import deepExtend from 'deep-extend';
-import type DiodeContainerQuery from './DiodeContainerQuery';
-import type { DiodeQuery, Variables } from '../tools/DiodeTypes';
+import deepExtend from "deep-extend";
+import type DiodeContainerQuery from "./DiodeContainerQuery";
+import type { DiodeQuery, Variables } from "../tools/DiodeTypes";
 
 /**
  * Represent complete query in Diode.RootContainer
@@ -63,12 +63,11 @@ class DiodeRootQuery {
    * If an object is found, recursively iterate the object keys
    */
   _compileFragmentKeys(rawFragment: any): any {
-
     return Object.keys(rawFragment).reduce((fragment, key) => {
       const parsedKey = this._compileFragmentValue(key);
 
       // typeof null === 'object'
-      if (typeof rawFragment[key] === 'object' && rawFragment[key] !== null) {
+      if (typeof rawFragment[key] === "object" && rawFragment[key] !== null) {
         fragment[parsedKey] = this._compileFragmentKeys(rawFragment[key]);
       } else {
         fragment[parsedKey] = this._compileFragmentValue(rawFragment[key]);
@@ -82,14 +81,14 @@ class DiodeRootQuery {
    * Replace value format with actual value from stored value map
    */
   _compileFragmentValue(rawFragment: any): any {
-    if (typeof rawFragment === 'string' && rawFragment.charAt(0) === '$') {
+    if (typeof rawFragment === "string" && rawFragment.charAt(0) === "$") {
       const key = rawFragment.slice(1);
       const value = this._variables[key];
 
       // If value not found from value map, return as is.
       // Do not use boolean coercion here as it's possible we have
       // falsy value like 0 and ''
-      if (typeof value === 'undefined' || value === null) {
+      if (typeof value === "undefined" || value === null) {
         return rawFragment;
       }
 
@@ -100,4 +99,4 @@ class DiodeRootQuery {
   }
 }
 
-module.exports = DiodeRootQuery;
+export default DiodeRootQuery;

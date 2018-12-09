@@ -4,19 +4,22 @@
 import type {
   PendingQueryRequest,
   DiodeQueryRequest
-} from './DiodeQueryRequest';
+} from "./DiodeQueryRequest";
 
-import { generateQueryRequest } from './DiodeQueryRequest';
+import { generateQueryRequest } from "./DiodeQueryRequest";
 
 function resolvePendingQuery(pendingQuery, response) {
   const { callback, dependencies } = pendingQuery;
 
-  const resolvedDependencies = dependencies.map(query => {
-    return response[query.type];
-  }).filter(response => Boolean(response));
+  const resolvedDependencies = dependencies
+    .map(query => {
+      return response[query.type];
+    })
+    .filter(response => Boolean(response));
 
   if (resolvedDependencies.length === dependencies.length) {
     // all dependencies resolvedDependencies
+    // eslint-disable-next-line callback-return
     const queryRequestInfo = callback(...resolvedDependencies);
     const queryRequest = generateQueryRequest(pendingQuery, queryRequestInfo);
 

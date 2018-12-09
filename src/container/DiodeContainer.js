@@ -1,25 +1,25 @@
 /**
  * @flow
  */
-import React from 'react';
-import deepExtend from 'deep-extend';
-import objectAssign from 'object-assign';
-import hoistStatics from 'hoist-non-react-statics';
-import DiodeContainerQuery from '../query/DiodeContainerQuery';
-import type { DiodeQueryMap } from '../tools/DiodeTypes';
+import React from "react";
+import deepExtend from "deep-extend";
+import objectAssign from "object-assign";
+import hoistStatics from "hoist-non-react-statics";
+import DiodeContainerQuery from "../query/DiodeContainerQuery";
+import type { DiodeQueryMap } from "../tools/DiodeTypes";
 
 export type DiodeContainer = {
   query: DiodeContainerQuery,
   displayName: string,
-  componentName: string,
+  componentName: string
 };
 
 export type DiodeContainerSpec = {
   wrapperInfo: {
-    [key: string]: string,
+    [key: string]: string
   },
   children?: Array<DiodeContainer>,
-  queries?: DiodeQueryMap,
+  queries?: DiodeQueryMap
 };
 
 function createContainerComponent(Component, spec) {
@@ -53,11 +53,18 @@ function createContainerComponent(Component, spec) {
   return hoistStatics(DiodeContainer, Component);
 }
 
-function createContainer(Component, spec: DiodeContainerSpec = {}): DiodeContainer {
+export function createContainer(
+  Component,
+  spec: DiodeContainerSpec = {}
+): DiodeContainer {
   /* istanbul ignore next */
   const componentName = Component.displayName || Component.name;
   const containerName = `Diode(${componentName})`;
-  const query = new DiodeContainerQuery(componentName, spec.queries, spec.children);
+  const query = new DiodeContainerQuery(
+    componentName,
+    spec.queries,
+    spec.children
+  );
 
   let Container;
   function ContainerConstructor(props, context) {
@@ -94,7 +101,3 @@ function createContainer(Component, spec: DiodeContainerSpec = {}): DiodeContain
 
   return hoistStatics(ContainerConstructor, Component, { query: true });
 }
-
-module.exports = {
-  create: createContainer,
-};

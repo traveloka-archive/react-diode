@@ -1,9 +1,9 @@
 /**
  * @flow
  */
-import deepExtend from 'deep-extend';
-import type { DiodeQueryMap } from '../tools/DiodeTypes';
-import type { DiodeContainer } from '../container/DiodeContainer';
+import deepExtend from "deep-extend";
+import type { DiodeQueryMap } from "../tools/DiodeTypes";
+import type { DiodeContainer } from "../container/DiodeContainer";
 
 /**
  * Partially-complete query in given DiodeContainer
@@ -20,7 +20,11 @@ class DiodeContainerQuery {
 
   _children: Array<DiodeContainer>;
 
-  constructor(componentName: string, queries: ?DiodeQueryMap, children: ?Array<DiodeContainer>) {
+  constructor(
+    componentName: string,
+    queries: ?DiodeQueryMap,
+    children: ?Array<DiodeContainer>
+  ) {
     this._componentName = componentName;
     this._queries = queries;
     this._children = children || [];
@@ -50,9 +54,7 @@ class DiodeContainerQuery {
    * Group distinct query type into single query shape, this is to make sure
    * there is no same query type with different key.
    */
-  _parseQueryTypeMap(
-    queries: ?DiodeQueryMap
-  ): void {
+  _parseQueryTypeMap(queries: ?DiodeQueryMap): void {
     if (queries === null || queries === undefined) {
       return;
     }
@@ -69,7 +71,11 @@ class DiodeContainerQuery {
       } else if (query.type) {
         this._queryTypeMap[query.type] = query;
       } else {
-        throw new Error(`Invalid query type in query key ${key} at component ${this._componentName}`);
+        throw new Error(
+          `Invalid query type in query key ${key} at component ${
+            this._componentName
+          }`
+        );
       }
     });
   }
@@ -79,9 +85,7 @@ class DiodeContainerQuery {
    * with same type as we can have different key between parent-child that
    * represent same query type
    */
-  _mergeChildQueryTypeMap(
-    children: ?Array<DiodeContainer>
-  ): void {
+  _mergeChildQueryTypeMap(children: ?Array<DiodeContainer>): void {
     if (!children || !children.length) {
       return;
     }
@@ -140,9 +144,14 @@ class DiodeContainerQuery {
         const existingQuery = this.map[key];
 
         if (existingQuery && existingQuery.type !== childQuery.type) {
-          return console.warn( // eslint-disable-line no-console
-            'Different query type for same query key %s: %s (%s) and %s (%s)',
-            key, this._componentName, existingQuery.type, child.componentName, childQuery.type
+          return console.warn(
+            // eslint-disable-line no-console
+            "Different query type for same query key %s: %s (%s) and %s (%s)",
+            key,
+            this._componentName,
+            existingQuery.type,
+            child.componentName,
+            childQuery.type
           );
         }
 
@@ -152,4 +161,4 @@ class DiodeContainerQuery {
   }
 }
 
-module.exports = DiodeContainerQuery;
+export default DiodeContainerQuery;

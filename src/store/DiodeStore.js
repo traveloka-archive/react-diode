@@ -1,24 +1,22 @@
 /**
  * @flow
  */
-import objectAssign from 'object-assign';
-import resolveContainerProps from '../container/resolveContainerProps';
-import DiodeNetworkLayer from '../network/DiodeNetworkLayer';
-import resolvePendingQueries from '../query/resolvePendingQueries';
-import resolveQueryResponse from '../query/resolveQueryResponse';
-import { filterBatchQuery } from '../query/filterBatchQuery';
-import { getQueryRequests } from '../query/DiodeQueryRequest';
+import objectAssign from "object-assign";
+import resolveContainerProps from "../container/resolveContainerProps";
+import DiodeNetworkLayer from "../network/DiodeNetworkLayer";
+import resolvePendingQueries from "../query/resolvePendingQueries";
+import resolveQueryResponse from "../query/resolveQueryResponse";
+import { filterBatchQuery } from "../query/filterBatchQuery";
+import { getQueryRequests } from "../query/DiodeQueryRequest";
 
-import type { DiodeRootContainer } from '../container/DiodeRootContainer';
+import type { DiodeRootContainer } from "../container/DiodeRootContainer";
 import type {
   BatchQueryDefinition,
   NetworkLayer,
   // TODO Annotate QueryMockResolver in DiodeTypes
   QueryMockResolver
-} from '../tools/DiodeTypes';
-import type {
-  DiodeQueryRequest
-} from '../query/DiodeQueryRequest';
+} from "../tools/DiodeTypes";
+import type { DiodeQueryRequest } from "../query/DiodeQueryRequest";
 
 class DiodeStore {
   _networkLayer: DiodeNetworkLayer;
@@ -35,27 +33,21 @@ class DiodeStore {
   /**
    * @public
    */
-  injectNetworkLayer(
-    networkLayer: NetworkLayer
-  ): void {
+  injectNetworkLayer(networkLayer: NetworkLayer): void {
     this._networkLayer.injectNetworkLayer(networkLayer);
   }
 
   /**
    * @public
    */
-  useMockQueries(
-    queryMockResolver: QueryMockResolver
-  ): void {
+  useMockQueries(queryMockResolver: QueryMockResolver): void {
     this._networkLayer.injectQueryMockResolver(queryMockResolver);
   }
 
   /**
    * @public
    */
-  useBatchQuery(
-    batchQuery: BatchQueryDefinition
-  ): void {
+  useBatchQuery(batchQuery: BatchQueryDefinition): void {
     /* istanbul ignore else */
     if (batchQuery) {
       this._batchQueryEnabled = true;
@@ -70,10 +62,7 @@ class DiodeStore {
    * server may respond with 304 status but it's not actually an internal
    * cached response
    */
-  forceFetch(
-    RootContainer: DiodeRootContainer,
-    options: any
-  ): Promise {
+  forceFetch(RootContainer: DiodeRootContainer, options: any): Promise {
     const queries = getQueryRequests(RootContainer, options);
     return this._fetchQueries(queries, options).then(response => {
       return resolveContainerProps(response, RootContainer);
@@ -104,26 +93,31 @@ class DiodeStore {
       queries = filterBatchQuery(queries, this._batchQuery, options);
     }
 
-    return this._networkLayer.sendQueries(queries, options)
-    .then(queryResponseMap => {
-      const responseMap = resolveQueryResponse(
-        queries,
-        initialQueries,
-        queryResponseMap,
-        options
-      );
+    return this._networkLayer
+      .sendQueries(queries, options)
+      .then(queryResponseMap => {
+        const responseMap = resolveQueryResponse(
+          queries,
+          initialQueries,
+          queryResponseMap,
+          options
+        );
 
-      if (pendingQueries.length > 0) {
-        const nextQueries = resolvePendingQueries(pendingQueries, responseMap);
-        return this._fetchQueries(nextQueries, options)
-        .then(nextResponseMap => {
-          return objectAssign(responseMap, nextResponseMap);
-        });
-      }
+        if (pendingQueries.length > 0) {
+          const nextQueries = resolvePendingQueries(
+            pendingQueries,
+            responseMap
+          );
+          return this._fetchQueries(nextQueries, options).then(
+            nextResponseMap => {
+              return objectAssign(responseMap, nextResponseMap);
+            }
+          );
+        }
 
-      return responseMap;
-    });
+        return responseMap;
+      });
   }
 }
 
-module.exports = new DiodeStore();
+export default new DiodeStore();

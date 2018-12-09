@@ -1,17 +1,17 @@
 /**
  * @flow
  */
-import type { DiodeRootContainer } from '../container/DiodeRootContainer';
-import type { DiodeQuery, QueryDefinition } from '../tools/DiodeTypes';
+import type { DiodeRootContainer } from "../container/DiodeRootContainer";
+import type { DiodeQuery, QueryDefinition } from "../tools/DiodeTypes";
 
-export type PendingQueryCallback = (response: any) => any
+export type PendingQueryCallback = (response: any) => any;
 
 type QueryRequestInfo = {
   pending: boolean,
   url: string,
   method: string,
   payload: any
-}
+};
 
 type PendingQueryRequestInfo = {
   pending: boolean,
@@ -21,16 +21,16 @@ type PendingQueryRequestInfo = {
   },
   resolvedDependencies: Array,
   callback: PendingQueryCallback
-}
+};
 
 type QueryInfo = {
   type: string,
   fragment: any,
-  resolve: (response: any) => any,
-}
+  resolve: (response: any) => any
+};
 
-export type QueryRequest = QueryInfo & QueryRequestInfo
-export type PendingQueryRequest = QueryInfo & PendingQueryRequestInfo
+export type QueryRequest = QueryInfo & QueryRequestInfo;
+export type PendingQueryRequest = QueryInfo & PendingQueryRequestInfo;
 export type DiodeQueryRequestInfo = QueryRequestInfo | PendingQueryRequestInfo;
 
 export type DiodeQueryRequest = QueryRequest | PendingQueryRequest;
@@ -79,7 +79,7 @@ export function createQueryRequest(
  */
 export function getQueryRequests(
   RootContainer: DiodeRootContainer,
-  options: any,
+  options: any
 ): Array<DiodeQueryRequest> {
   const queries = RootContainer.query.compile();
 

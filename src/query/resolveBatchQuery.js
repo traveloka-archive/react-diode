@@ -1,6 +1,6 @@
-import find from 'lodash.find';
-import objectAssign from 'object-assign';
-import type { DiodeQueryRequest } from './DiodeQueryRequest';
+import find from "lodash.find";
+import objectAssign from "object-assign";
+import type { DiodeQueryRequest } from "./DiodeQueryRequest";
 
 /**
  * Parse batch query response and assign the response to each
@@ -22,7 +22,7 @@ export default function resolveBatchQuery(
       // Special treatment for __additional property in batch query response.
       // This is used internally so only remove this if statement when you
       // know what you're doing
-      if (queryType === '__additional') {
+      if (queryType === "__additional") {
         const specialResponse = { __additional: queryResponse };
         objectAssign(responseMap, specialResponse);
       } else if (queryResponse && query) {

@@ -1,8 +1,8 @@
 /**
  * @flow
  */
-import type { BatchQueryDefinition } from '../tools/DiodeTypes';
-import type { DiodeQueryRequest } from './DiodeQueryRequest';
+import type { BatchQueryDefinition } from "../tools/DiodeTypes";
+import type { DiodeQueryRequest } from "./DiodeQueryRequest";
 
 export default function createBatchQueryRequest(
   query: BatchQueryDefinition,

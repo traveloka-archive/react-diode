@@ -1,10 +1,10 @@
 /**
  * @flow
  */
-import find from 'lodash.find';
-import createBatchQueryRequest from './createBatchQueryRequest';
-import type { DiodeQueryRequest } from './DiodeQueryRequest';
-import type { BatchQueryDefinition } from '../tools/DiodeTypes';
+import find from "lodash.find";
+import createBatchQueryRequest from "./createBatchQueryRequest";
+import type { DiodeQueryRequest } from "./DiodeQueryRequest";
+import type { BatchQueryDefinition } from "../tools/DiodeTypes";
 
 /**
  * Given a set of query requests, filter and transform some queries
@@ -21,15 +21,15 @@ export function filterBatchQuery(
   const { queryTypes, forceMerge } = batchQuery;
 
   const batchQueryList = queryTypes
-  .map(type => find(queries, { type }))
-  .filter(query => Boolean(query));
+    .map(type => find(queries, { type }))
+    .filter(query => Boolean(query));
 
   // We need to make sure the queries listed has same length as
   // query requirements in queryTypes. We can use forceMerge to bypass
   // this checking but be warned that by using forceMerge, you can no
   // longer rely on query requirements order in request() method
   if (
-    (batchQueryList.length === queryTypes.length) ||
+    batchQueryList.length === queryTypes.length ||
     // if forceMerge is enabled, make sure at least one query satisfied
     // the requirement to prevent zero query length
     (forceMerge && batchQueryList.length > 0)

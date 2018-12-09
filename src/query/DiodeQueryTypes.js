@@ -1,5 +1,5 @@
 const DiodeQueryTypes = {
-  BATCH: 'batch-query'
+  BATCH: "batch-query"
 };
 
 export default DiodeQueryTypes;

@@ -1,5 +1,5 @@
-import objectAssign from 'object-assign';
-import type DiodeRootContainer from './DiodeRootContainer';
+import objectAssign from "object-assign";
+import type DiodeRootContainer from "./DiodeRootContainer";
 
 export default function resolveContainerProps(
   response,

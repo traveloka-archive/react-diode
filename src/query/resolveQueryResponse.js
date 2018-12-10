@@ -1,5 +1,4 @@
 import find from "lodash.find";
-import objectAssign from "object-assign";
 import DiodeQueryTypes from "./DiodeQueryTypes";
 import resolveBatchQuery from "./resolveBatchQuery";
 
@@ -24,7 +23,7 @@ export default function resolveQueryResponse(
         initialQueries,
         options
       );
-      objectAssign(map, batchQueryResponseMap);
+      Object.assign(map, batchQueryResponseMap);
     } else {
       map[type] = query.resolve(queryResponse, query.fragment, options);
     }

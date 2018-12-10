@@ -3,15 +3,6 @@ import Store from "../store/DiodeStore";
 
 export const CacheContext = React.createContext(null);
 
-class PendingPromise {
-  constructor() {
-    this.promise = new Promise((resolve, reject) => {
-      this.resolve = resolve;
-      this.reject = reject;
-    });
-  }
-}
-
 export class DiodeCache {
   constructor(cache, options) {
     Store.cache = cache;
@@ -64,6 +55,6 @@ export class DiodeCache {
   }
 }
 
-export function createCache(initialCache) {
-  return new DiodeCache(initialCache);
+export function createCache(initialCache, options) {
+  return new DiodeCache(initialCache, options);
 }

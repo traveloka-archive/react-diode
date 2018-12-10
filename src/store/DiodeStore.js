@@ -1,13 +1,17 @@
 /**
  * @flow
  */
-import objectAssign from "object-assign";
+import deepExtend from "deep-extend";
 import resolveContainerProps from "../container/resolveContainerProps";
 import DiodeNetworkLayer from "../network/DiodeNetworkLayer";
+import DiodeRootQuery from "../query/DiodeRootQuery";
 import resolvePendingQueries from "../query/resolvePendingQueries";
 import resolveQueryResponse from "../query/resolveQueryResponse";
 import { filterBatchQuery } from "../query/filterBatchQuery";
-import { getQueryRequests } from "../query/DiodeQueryRequest";
+import {
+  getQueryRequests,
+  generateQueryRequest
+} from "../query/DiodeQueryRequest";
 
 import type { DiodeRootContainer } from "../container/DiodeRootContainer";
 import type {
@@ -69,6 +73,61 @@ class DiodeStore {
     });
   }
 
+  filterCachedFragments(query) {
+    const cache = this.cache[query.type];
+
+    if (!cache) {
+      return query;
+    }
+
+    const filteredFragments = {};
+    Object.keys(query.fragment).forEach(fragmentKey => {
+      if (cache[fragmentKey]) {
+        // TODO check fetch 1, fetch all
+        // 1st pass { a: null }
+        // 2nd pass { }
+        return;
+      }
+
+      filteredFragments[fragmentKey] = {};
+      // this query type might be partially cached
+      // check specific fragment
+      const innerFragment = query.fragment[fragmentKey];
+      const innerFragmentKeys = Object.keys(innerFragment);
+      innerFragmentKeys.forEach(innerKey => {
+        if (cache[fragmentKey] && cache[fragmentKey][innerKey]) {
+          return;
+        }
+
+        filteredFragments[fragmentKey][innerKey] = innerFragment[innerKey];
+      });
+    });
+
+    return {
+      ...query,
+      fragment: filteredFragments
+    };
+  }
+
+  async fetch(rawQuery, options) {
+    const rootQuery = new DiodeRootQuery(rawQuery);
+    const queries = rootQuery
+      .compile()
+      .map(query => {
+        const { fragment, params } = this.filterCachedFragments(query);
+        if (Object.keys(fragment).length === 0) {
+          return null;
+        }
+
+        const queryRequestInfo = query.request(fragment, params, options);
+        return generateQueryRequest(query, queryRequestInfo);
+      })
+      .filter(Boolean);
+
+    const response = await this._fetchQueries(queries, options);
+    deepExtend(this.cache, response);
+  }
+
   /**
    * Recursively fetch over query dependency, starting with query with no
    * dependency, and build response moving up
@@ -110,7 +169,7 @@ class DiodeStore {
           );
           return this._fetchQueries(nextQueries, options).then(
             nextResponseMap => {
-              return objectAssign(responseMap, nextResponseMap);
+              return Object.assign(responseMap, nextResponseMap);
             }
           );
         }

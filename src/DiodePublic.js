@@ -1,3 +1,4 @@
+import { CacheContext, createCache } from "./cache/DiodeCache";
 import DiodeStore from "./store/DiodeStore";
 import { createContainer } from "./container/DiodeContainer";
 import { createRootContainer } from "./container/DiodeRootContainer";
@@ -10,8 +11,10 @@ import {
 
 const DiodePublic = {
   Store: DiodeStore,
+  CacheProvider: CacheContext.Provider,
   QueryTypes: DiodeQueryTypes,
 
+  createCache,
   createContainer,
   createRootContainer,
   createQuery: createDiodeQuery,

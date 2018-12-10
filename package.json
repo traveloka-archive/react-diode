@@ -13,7 +13,7 @@
   "scripts": {
     "lint": "marlint --quiet",
     "test": "jest --coverage",
-    "build": "microbundle",
+    "build": "microbundle --jsx React.createElement",
     "format": "prettier --write src/**/*.js"
   },
   "repository": {

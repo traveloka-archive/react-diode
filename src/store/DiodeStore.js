@@ -12,6 +12,7 @@ import {
   getQueryRequests,
   generateQueryRequest
 } from "../query/DiodeQueryRequest";
+import { FETCH_ALL_CACHE } from "../cache/DiodeCache";
 
 import type { DiodeRootContainer } from "../container/DiodeRootContainer";
 import type {
@@ -21,6 +22,23 @@ import type {
   QueryMockResolver
 } from "../tools/DiodeTypes";
 import type { DiodeQueryRequest } from "../query/DiodeQueryRequest";
+
+function markFetchAllCache(response, queries) {
+  // mark special fetch-all case so our cache is aware
+  queries.forEach(query => {
+    Object.keys(query.fragment).forEach(fragmentKey => {
+      const fragmentResponse = response[query.type][fragmentKey];
+      if (
+        Object.keys(query.fragment[fragmentKey]).length === 0 &&
+        fragmentResponse
+      ) {
+        fragmentResponse[FETCH_ALL_CACHE] = true;
+      }
+    });
+  });
+
+  return response;
+}
 
 class DiodeStore {
   _networkLayer: DiodeNetworkLayer;
@@ -69,7 +87,8 @@ class DiodeStore {
   forceFetch(RootContainer: DiodeRootContainer, options: any): Promise {
     const queries = getQueryRequests(RootContainer, options);
     return this._fetchQueries(queries, options).then(response => {
-      return resolveContainerProps(response, RootContainer);
+      const result = resolveContainerProps(response, RootContainer);
+      return markFetchAllCache(result, queries);
     });
   }
 
@@ -82,20 +101,23 @@ class DiodeStore {
 
     const filteredFragments = {};
     Object.keys(query.fragment).forEach(fragmentKey => {
-      if (cache[fragmentKey]) {
-        // TODO check fetch 1, fetch all
-        // 1st pass { a: null }
-        // 2nd pass { }
+      const cachedFragment = cache[fragmentKey];
+      const innerFragment = query.fragment[fragmentKey];
+      const innerFragmentKeys = Object.keys(innerFragment);
+
+      if (innerFragmentKeys.length === 0) {
+        // fetch all
+        if (cachedFragment && !cachedFragment[FETCH_ALL_CACHE]) {
+          filteredFragments[fragmentKey] = {};
+        }
         return;
       }
 
-      filteredFragments[fragmentKey] = {};
       // this query type might be partially cached
       // check specific fragment
-      const innerFragment = query.fragment[fragmentKey];
-      const innerFragmentKeys = Object.keys(innerFragment);
+      filteredFragments[fragmentKey] = {};
       innerFragmentKeys.forEach(innerKey => {
-        if (cache[fragmentKey] && cache[fragmentKey][innerKey]) {
+        if (cachedFragment && cachedFragment[innerKey]) {
           return;
         }
 
@@ -125,7 +147,7 @@ class DiodeStore {
       .filter(Boolean);
 
     const response = await this._fetchQueries(queries, options);
-    deepExtend(this.cache, response);
+    deepExtend(this.cache, markFetchAllCache(response, queries));
   }
 
   /**

@@ -3,6 +3,8 @@ import Store from "../store/DiodeStore";
 
 export const CacheContext = React.createContext(null);
 
+export const FETCH_ALL_CACHE = "__fac__";
+
 export class DiodeCache {
   constructor(cache, options) {
     Store.cache = cache;
@@ -25,22 +27,27 @@ export class DiodeCache {
       // check for unresolved fragment
       const query = containerQuery.map[type];
       return Object.keys(query.fragmentStructure).some(fragment => {
+        const cachedFragment = cache[fragment];
         const innerFragmentKeys = Object.keys(
           query.fragmentStructure[fragment]
         );
 
         if (innerFragmentKeys.length === 0) {
-          // TODO fix 2nd load fetch all
-          return cache[fragment] === null;
+          if (cachedFragment && typeof cachedFragment === "object") {
+            // might already cache fetch-all
+            return !cachedFragment[FETCH_ALL_CACHE];
+          }
+
+          return cachedFragment === undefined;
         }
 
         return innerFragmentKeys.some(key => {
           // API can return null
-          if (cache[fragment]) {
-            return cache[fragment][key] === undefined;
+          if (cachedFragment) {
+            return cachedFragment[key] === undefined;
           }
 
-          return cache[fragment] === undefined;
+          return cachedFragment === undefined;
         });
       });
     });

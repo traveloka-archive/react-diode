@@ -1,6 +1,6 @@
-import Diode from "../../";
+const Diode = require("react-diode");
 
-export default {
+module.exports = {
   type: "contentResource",
   request(fragment, params, options) {
     const crNames = Object.keys(fragment);

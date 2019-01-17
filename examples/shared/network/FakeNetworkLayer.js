@@ -1,5 +1,6 @@
-export default class FakeNetworkLayer {
+module.exports = class FakeNetworkLayer {
   async sendQueries(queries, options) {
+    console.log("send queries", queries);
     const responses = await Promise.all(
       queries.map(query => {
         if (query.type !== "contentResource") {
@@ -8,6 +9,7 @@ export default class FakeNetworkLayer {
 
         const fakeContentResource = {};
         const keys = query.payload.contentResources;
+        console.log("keys", keys);
         keys.forEach(key => {
           fakeContentResource[key.name] = {};
           key.entries.forEach(entry => {
@@ -34,9 +36,11 @@ export default class FakeNetworkLayer {
       })
     );
 
+    console.log("resolved", responses);
+
     return responses.reduce((result, response) => {
       result[response.type] = response.data;
       return result;
     }, {});
   }
-}
+};

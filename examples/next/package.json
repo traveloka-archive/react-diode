@@ -4,6 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
+    "postinstall": "yarn link react-diode @diode/example",
     "start": "next"
   },
   "dependencies": {

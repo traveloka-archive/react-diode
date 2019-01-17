@@ -1,0 +1,9 @@
+{
+  "name": "@diode/example",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "postinstall": "yarn link && yarn link react-diode"
+  },
+  "license": "MIT"
+}

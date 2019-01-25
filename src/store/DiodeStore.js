@@ -23,18 +23,27 @@ import type {
 } from "../tools/DiodeTypes";
 import type { DiodeQueryRequest } from "../query/DiodeQueryRequest";
 
+/*
+  Possible Errors:
+  1. Fragments of the query is not an object.
+*/
+
 function markFetchAllCache(response, queries) {
   // mark special fetch-all case so our cache is aware
   queries.forEach(query => {
-    Object.keys(query.fragment).forEach(fragmentKey => {
-      const fragmentResponse = response[query.type][fragmentKey];
-      if (
-        Object.keys(query.fragment[fragmentKey]).length === 0 &&
-        fragmentResponse
-      ) {
-        fragmentResponse[FETCH_ALL_CACHE] = true;
-      }
-    });
+    try {
+      Object.keys(query.fragment).forEach(fragmentKey => {
+        const fragmentResponse = response[query.type][fragmentKey];
+        if (
+          Object.keys(query.fragment[fragmentKey]).length === 0 &&
+          fragmentResponse
+        ) {
+          fragmentResponse[FETCH_ALL_CACHE] = true;
+        }
+      });
+    } catch (err) {
+      throw new Error("Query fragments must be an Object type");
+    }
   });
 
   return response;

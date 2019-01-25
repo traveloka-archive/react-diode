@@ -13,8 +13,8 @@ export default class Page extends React.Component {
       return { cache };
     }
 
-    // get cache from props
-    return { cache: this.props.cache };
+    // get cache from window
+    return { cache: window.__NEXT_DATA__.props.pageProps };
   }
 
   constructor(props) {

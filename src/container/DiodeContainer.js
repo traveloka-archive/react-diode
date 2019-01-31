@@ -52,14 +52,17 @@ class DiodeQueryFetcher extends React.Component {
       wrapper,
       cache,
       query,
-      onLoading,
-      onError,
+      handleLoading,
+      handleError,
       ...props
     } = this.props;
 
     if (this.state.error !== null) {
-      // TODO error handling
-      return onError ? onError(props) : <span>{this.state.error.message}</span>;
+      return typeof handleError === "function" ? (
+        handleError(props)
+      ) : (
+        <span>{this.state.error.message}</span>
+      );
     }
 
     let resolved, loading;
@@ -77,7 +80,8 @@ class DiodeQueryFetcher extends React.Component {
     let component;
 
     if (loading) {
-      component = typeof onLoading === "function" ? onLoading(props) : null;
+      component =
+        typeof handleLoading === "function" ? handleLoading(props) : null;
     } else {
       component = <Component {...props} {...cache.getContents()} />;
     }
@@ -115,8 +119,8 @@ function createContainerComponent(Component, spec, query) {
                 wrapper={wrapper}
                 query={query}
                 cache={cache}
-                onLoading={spec.handleLoading}
-                onError={spec.handleError}
+                handleLoading={spec.onLoading}
+                handleError={spec.onError}
               />
             );
           }}

@@ -47,20 +47,40 @@ class DiodeQueryFetcher extends React.Component {
   }
 
   render() {
-    const { Component, wrapper, cache, query, ...props } = this.props;
+    const {
+      Component,
+      wrapper,
+      cache,
+      query,
+      onLoading,
+      onError,
+      ...props
+    } = this.props;
 
     if (this.state.error !== null) {
       // TODO error handling
-      return <span>{this.state.error.message}</span>;
+      return onError ? onError(props) : <span>{this.state.error.message}</span>;
     }
 
-    const resolved = cache.hasResolved(query);
-    const loading = !resolved && this.state.loading;
+    let resolved, loading;
 
-    const component = loading ? // TODO async handling
-    null : (
-      <Component {...props} {...cache.getContents()} />
-    );
+    try {
+      resolved = cache.hasResolved(query);
+      loading = !resolved && this.state.loading;
+    } catch (error) {
+      console.error("error", error);
+      throw new Error(
+        "Cache not found. Diode Cache is now required to use Diode."
+      );
+    }
+
+    let component;
+
+    if (loading) {
+      component = typeof onLoading === "function" ? onLoading(props) : null;
+    } else {
+      component = <Component {...props} {...cache.getContents()} />;
+    }
 
     if (wrapper) {
       return <div {...wrapper}>{component}</div>;
@@ -95,6 +115,8 @@ function createContainerComponent(Component, spec, query) {
                 wrapper={wrapper}
                 query={query}
                 cache={cache}
+                onLoading={spec.handleLoading}
+                onError={spec.handleError}
               />
             );
           }}

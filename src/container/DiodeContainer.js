@@ -52,36 +52,45 @@ class DiodeQueryFetcher extends React.Component {
       wrapper,
       cache,
       query,
-      handleLoading,
-      handleError,
+      loading: LoadingComponent,
+      error: ErrorComponent,
       ...props
     } = this.props;
 
     if (this.state.error !== null) {
-      return typeof handleError === "function" ? (
-        handleError(props)
-      ) : (
-        <span>{this.state.error.message}</span>
-      );
+      if (ErrorComponent && React.isValidElement(ErrorComponent)) {
+        return <ErrorComponent {...props} />;
+      }
+
+      if (typeof ErrorComponent === "function") {
+        return ErrorComponent(props);
+      }
+
+      return <span>{this.state.error.message}</span>;
     }
 
-    let resolved, loading;
+    let resolved, isLoading, component;
 
+    // If cache is not provided, assume that all resources is already fetched
+    // on the server.
     try {
       resolved = cache.hasResolved(query);
-      loading = !resolved && this.state.loading;
+      isLoading = !resolved && this.state.loading;
     } catch (error) {
-      console.error("error", error);
-      throw new Error(
-        "Cache not found. Diode Cache is now required to use Diode."
+      console.warn(
+        "Cache not found. Rendering component without cache contents."
       );
+      return <Component {...props} />;
     }
 
-    let component;
-
-    if (loading) {
-      component =
-        typeof handleLoading === "function" ? handleLoading(props) : null;
+    if (isLoading) {
+      if (LoadingComponent && React.isValidElement(LoadingComponent)) {
+        component = <LoadingComponent {...props} />;
+      } else if (typeof LoadingComponent === "function") {
+        component = LoadingComponent(props);
+      } else {
+        component = null;
+      }
     } else {
       component = <Component {...props} {...cache.getContents()} />;
     }
@@ -119,8 +128,8 @@ function createContainerComponent(Component, spec, query) {
                 wrapper={wrapper}
                 query={query}
                 cache={cache}
-                handleLoading={spec.onLoading}
-                handleError={spec.onError}
+                loading={spec.loading}
+                error={spec.error}
               />
             );
           }}

@@ -32,6 +32,10 @@ export class DiodeCache {
           query.fragmentStructure[fragment]
         );
 
+        if (Array.isArray(cachedFragment)) {
+          return false;
+        }
+
         if (innerFragmentKeys.length === 0) {
           if (cachedFragment && typeof cachedFragment === "object") {
             // might already cache fetch-all
@@ -58,7 +62,7 @@ export class DiodeCache {
   }
 
   async resolve(containerQuery) {
-    await Store.fetch(containerQuery);
+    await Store.fetch(containerQuery, Store.options);
   }
 }
 

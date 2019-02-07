@@ -101,6 +101,13 @@ class DiodeStore {
     });
   }
 
+  /**
+   * @private
+   *
+   * Remove fragments that have already been cached from query; cached fragments
+   * should not be fetched. Returned fragment are fragments that are required but
+   * have not been fetched.
+   */
   filterCachedFragments(query) {
     const cache = this.cache[query.type];
 
@@ -115,10 +122,14 @@ class DiodeStore {
       const innerFragmentKeys = Object.keys(innerFragment);
 
       if (innerFragmentKeys.length === 0) {
-        // fetch all
-        if (cachedFragment && !cachedFragment[FETCH_ALL_CACHE]) {
-          filteredFragments[fragmentKey] = {};
+        // If fragment is already cached and all data in the fragment is
+        // already fetched, remove all fragments. Otherwise, fetch all
+        // fragments.
+        if (cachedFragment && cachedFragment[FETCH_ALL_CACHE]) {
+          return;
         }
+
+        filteredFragments[fragmentKey] = {};
         return;
       }
 

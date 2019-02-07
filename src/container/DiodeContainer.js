@@ -2,12 +2,14 @@
  * @flow
  */
 import React from "react";
+import { isValidElementType } from "react-is";
 import deepExtend from "deep-extend";
 import objectAssign from "object-assign";
 import hoistStatics from "hoist-non-react-statics";
 import DiodeContainerQuery from "../query/DiodeContainerQuery";
 import type { DiodeQueryMap } from "../tools/DiodeTypes";
 import { CacheContext } from "../cache/DiodeCache";
+import { isValid } from "date-fns";
 
 export type DiodeContainer = {
   query: DiodeContainerQuery,
@@ -58,15 +60,11 @@ class DiodeQueryFetcher extends React.Component {
     } = this.props;
 
     if (this.state.error !== null) {
-      if (ErrorComponent && React.isValidElement(ErrorComponent)) {
-        return <ErrorComponent {...props} />;
-      }
-
-      if (typeof ErrorComponent === "function") {
-        return ErrorComponent(props);
-      }
-
-      return <span>{this.state.error.message}</span>;
+      return ErrorComponent && isValidElementType(ErrorComponent) ? (
+        React.createElement(ErrorComponent, props)
+      ) : (
+        <span>{this.state.error.message}</span>
+      );
     }
 
     let resolved, isLoading, component;
@@ -84,13 +82,13 @@ class DiodeQueryFetcher extends React.Component {
     }
 
     if (isLoading) {
-      if (LoadingComponent && React.isValidElement(LoadingComponent)) {
-        component = <LoadingComponent {...props} />;
-      } else if (typeof LoadingComponent === "function") {
-        component = LoadingComponent(props);
-      } else {
-        component = null;
-      }
+      component =
+        LoadingComponent && isValidElementType(LoadingComponent)
+          ? React.createElement(LoadingComponent, props)
+          : null;
+      component = LoadingComponent
+        ? React.createElement(LoadingComponent, props)
+        : null;
     } else {
       component = <Component {...props} {...cache.getContents()} />;
     }

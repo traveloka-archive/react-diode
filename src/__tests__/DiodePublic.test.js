@@ -1,10 +1,11 @@
 import React from "react";
-import { render, cleanup, waitForElement } from "react-testing-library";
+import { render, waitForElement } from "react-testing-library";
 import "jest-dom/extend-expect";
 import "react-testing-library/cleanup-after-each";
 
 import Diode from "../DiodePublic";
 import ContentResourceQuery from "./fixtures/ContentResourceQuery";
+import ImageSliderQuery from "./fixtures/ImageSliderQuery";
 
 const fakeNetworkLayer = {
   sendQueries: jest.fn()
@@ -21,6 +22,15 @@ test("do not fetch if already in cache", async () => {
   const ComponentX = props => <div>{props.contentResource.hello.world}</div>;
   const ComponentY = props => <div>{props.contentResource.hello.world}</div>;
   const ComponentZ = props => <div>{props.contentResource.new.world}</div>;
+  const ComponentA = props => (
+    <div>{props.imageSlider.sample.map(image => image.title)}</div>
+  );
+  const ComponentB = props => (
+    <div>{props.imageSlider.sample.map(image => image.title)}</div>
+  );
+  const ComponentC = props => (
+    <div>{props.imageSlider.test.map(image => image.title)}</div>
+  );
 
   const ContainerX = Diode.createRootContainer(ComponentX, {
     queries: {
@@ -52,6 +62,30 @@ test("do not fetch if already in cache", async () => {
     }
   });
 
+  const ContainerA = Diode.createRootContainer(ComponentA, {
+    queries: {
+      imageSlider: Diode.createQuery(ImageSliderQuery, {
+        sample: {}
+      })
+    }
+  });
+
+  const ContainerB = Diode.createRootContainer(ComponentB, {
+    queries: {
+      imageSlider: Diode.createQuery(ImageSliderQuery, {
+        sample: {}
+      })
+    }
+  });
+
+  const ContainerC = Diode.createRootContainer(ComponentC, {
+    queries: {
+      imageSlider: Diode.createQuery(ImageSliderQuery, {
+        test: {}
+      })
+    }
+  });
+
   fakeNetworkLayer.sendQueries
     .mockResolvedValueOnce({
       contentResource: {
@@ -72,6 +106,20 @@ test("do not fetch if already in cache", async () => {
               world: "new world!"
             }
           }
+        }
+      }
+    })
+    .mockResolvedValueOnce({
+      imageSlider: {
+        data: {
+          sample: [{ title: "image1" }]
+        }
+      }
+    })
+    .mockResolvedValueOnce({
+      imageSlider: {
+        data: {
+          test: [{ title: "image2" }]
         }
       }
     });
@@ -104,6 +152,42 @@ test("do not fetch if already in cache", async () => {
   await waitForElement(() => container.firstChild);
   expect(fakeNetworkLayer.sendQueries).toBeCalledTimes(++fetchCount);
   expect(container.firstChild).toHaveTextContent("new world!");
+
+  // re-render other component with different queries
+  rerender(
+    <Diode.CacheProvider value={cache}>
+      <ContainerA />
+    </Diode.CacheProvider>
+  );
+
+  // different key, fetch again
+  await waitForElement(() => container.firstChild);
+  expect(fakeNetworkLayer.sendQueries).toBeCalledTimes(++fetchCount);
+  expect(container.firstChild).toHaveTextContent("image1");
+
+  // re-render other component with same queries
+  rerender(
+    <Diode.CacheProvider value={cache}>
+      <ContainerB />
+    </Diode.CacheProvider>
+  );
+
+  // already in cache, no additional fetch
+  await waitForElement(() => container.firstChild);
+  expect(fakeNetworkLayer.sendQueries).toBeCalledTimes(fetchCount);
+  expect(container.firstChild).toHaveTextContent("image1");
+
+  // re-render other component with same queries
+  rerender(
+    <Diode.CacheProvider value={cache}>
+      <ContainerC />
+    </Diode.CacheProvider>
+  );
+
+  // different key, fetch again
+  await waitForElement(() => container.firstChild);
+  expect(fakeNetworkLayer.sendQueries).toBeCalledTimes(++fetchCount);
+  expect(container.firstChild).toHaveTextContent("image2");
 });
 
 test("able to understand fetch-all pattern", async () => {
@@ -254,138 +338,73 @@ test("able to understand fetch-all pattern", async () => {
   expect(container.firstChild).toHaveTextContent("love");
 });
 
-describe("Loading and Error handling tests for client-side data fetching", () => {
-  const loadingNetworkLayer = {
-    sendQueries: jest.fn().mockImplementation(() => {
-      return new Promise((resolve, reject) =>
-        setTimeout(() => Promise.resolve(), 3000)
-      );
-    })
-  };
-
-  const errorNetworkLayer = {
-    sendQueries: jest.fn().mockRejectedValue({ message: "Error Message" })
-  };
-
-  test("Execute injected loading handler on loading", () => {
-    Diode.injectNetworkLayer(loadingNetworkLayer);
-
-    const Component = props => <div>{"Hello, world"}</div>;
-    const onLoading = jest
-      .fn()
-      .mockImplementation(props => <div>{"Loading..."}</div>);
-
-    const Container = Diode.createRootContainer(Component, {
-      queries: {
-        contentResource: Diode.createQuery(ContentResourceQuery, {
+test("Render loading component when cache is not resolved", async () => {
+  fakeNetworkLayer.sendQueries.mockResolvedValueOnce({
+    contentResource: {
+      data: {
+        contentResources: {
           hello: {
-            world: null
+            world: "hello, world!"
           }
-        })
-      },
-      onLoading
-    });
-
-    const cache = Diode.createCache({});
-
-    const { container } = render(
-      <Diode.CacheProvider value={cache}>
-        <Container />
-      </Diode.CacheProvider>
-    );
-
-    expect(loadingNetworkLayer.sendQueries).toHaveBeenCalled();
-    expect(onLoading).toHaveBeenCalled();
-    expect(container.firstChild).toHaveTextContent("Loading...");
-  });
-
-  test("If loading handler is not found, show default loading on loading", () => {
-    Diode.injectNetworkLayer(loadingNetworkLayer);
-
-    const Component = props => <div>{"Hello, world"}</div>;
-
-    const Container = Diode.createRootContainer(Component, {
-      queries: {
-        contentResource: Diode.createQuery(ContentResourceQuery, {
-          hello: {
-            world: null
-          }
-        })
+        }
       }
-    });
-
-    const cache = Diode.createCache({});
-
-    const { container } = render(
-      <Diode.CacheProvider value={cache}>
-        <Container />
-      </Diode.CacheProvider>
-    );
-
-    expect(loadingNetworkLayer.sendQueries).toHaveBeenCalled();
-    expect(container.firstChild).toBe(null);
+    }
   });
 
-  test("Execute injected error handler on error", async () => {
-    Diode.injectNetworkLayer(errorNetworkLayer);
+  const Component = props => <div>{props.contentResource.hello.world}</div>;
+  const LoadingComponent = () => <div>{"Loading Component"}</div>;
 
-    const Component = props => <div>{"Hello, world"}</div>;
-    const onError = jest
-      .fn()
-      .mockImplementation(props => <div>{"onError executed"}</div>);
-
-    const Container = Diode.createRootContainer(Component, {
-      queries: {
-        contentResource: Diode.createQuery(ContentResourceQuery, {
-          hello: {
-            world: null
-          }
-        })
-      },
-      onError
-    });
-
-    const cache = Diode.createCache({});
-
-    const { container } = render(
-      <Diode.CacheProvider value={cache}>
-        <Container />
-      </Diode.CacheProvider>
-    );
-
-    await waitForElement(() => container.firstChild);
-
-    expect(loadingNetworkLayer.sendQueries).toHaveBeenCalled();
-    expect(onError).toHaveBeenCalled();
-    expect(container.firstChild).toHaveTextContent("onError executed");
+  const Container = Diode.createRootContainer(Component, {
+    queries: {
+      contentResource: Diode.createQuery(ContentResourceQuery, {
+        hello: {
+          world: null
+        }
+      })
+    },
+    loading: LoadingComponent
   });
 
-  test("If error handler is not found, show default error on error", async () => {
-    Diode.injectNetworkLayer(errorNetworkLayer);
+  const cache = Diode.createCache({});
 
-    const Component = props => <div>{"Hello, world"}</div>;
+  const { getByText } = render(
+    <Diode.CacheProvider value={cache}>
+      <Container />
+    </Diode.CacheProvider>
+  );
 
-    const Container = Diode.createRootContainer(Component, {
-      queries: {
-        contentResource: Diode.createQuery(ContentResourceQuery, {
-          hello: {
-            world: null
-          }
-        })
-      }
-    });
+  // When cache is resolved, should not display loading component
+  await waitForElement(() => getByText("hello, world!"));
 
-    const cache = Diode.createCache({});
+  expect(getByText("hello, world!")).not.toBeNull();
+});
 
-    const { container } = render(
-      <Diode.CacheProvider value={cache}>
-        <Container />
-      </Diode.CacheProvider>
-    );
+test("Render error component when cache fails to resolve", async () => {
+  fakeNetworkLayer.sendQueries.mockRejectedValueOnce("Error");
 
-    await waitForElement(() => container.firstChild);
+  const Component = props => <div>{props.contentResource.hello.world}</div>;
+  const ErrorComponent = () => <div>{"Error Component"}</div>;
 
-    expect(loadingNetworkLayer.sendQueries).toHaveBeenCalled();
-    expect(container.firstChild).toHaveTextContent("Error Message");
+  const Container = Diode.createRootContainer(Component, {
+    queries: {
+      contentResource: Diode.createQuery(ContentResourceQuery, {
+        hello: {
+          world: null
+        }
+      })
+    },
+    error: ErrorComponent
   });
+
+  const cache = Diode.createCache({});
+
+  const { container } = render(
+    <Diode.CacheProvider value={cache}>
+      <Container />
+    </Diode.CacheProvider>
+  );
+
+  // When cache fails to resolve, should display error component
+  await waitForElement(() => container.firstChild);
+  expect(container.firstChild).toHaveTextContent("Error Component");
 });

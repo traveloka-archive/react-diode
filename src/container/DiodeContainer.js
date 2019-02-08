@@ -33,8 +33,11 @@ class DiodeQueryFetcher extends React.Component {
   async componentDidMount() {
     const { cache, query } = this.props;
 
-    // prevent re-renders ?
-    if (cache.hasResolved(query)) {
+    if (!cache || cache.hasResolved(query)) {
+      this.setState({
+        loading: false
+      });
+
       return;
     }
 

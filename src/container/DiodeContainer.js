@@ -71,7 +71,8 @@ class DiodeQueryFetcher extends React.Component {
 
     // If cache is not provided, assume that all resources is already fetched
     // on the server.
-    if (!cache) {
+    // NOTE: this will also prevent LoadingComponent to be rendered on server
+    if (!cache || Object.keys(cache).length === 0) {
       if (process.env.NODE_ENV !== "production") {
         console.warn(
           "Cache not found. Rendering component without cache contents."

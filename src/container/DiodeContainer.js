@@ -66,28 +66,26 @@ class DiodeQueryFetcher extends React.Component {
       );
     }
 
-    let resolved, isLoading, component;
-
     // If cache is not provided, assume that all resources is already fetched
     // on the server.
-    try {
-      resolved = cache.hasResolved(query);
-      isLoading = !resolved && this.state.loading;
-    } catch (error) {
-      console.warn(
-        "Cache not found. Rendering component without cache contents."
-      );
+    if (!cache) {
+      if (process.env.NODE_ENV !== "production") {
+        console.warn(
+          "Cache not found. Rendering component without cache contents."
+        );
+      }
       return <Component {...props} />;
     }
+
+    const resolved = cache.hasResolved(query);
+    const isLoading = !resolved && this.state.loading;
+    let component;
 
     if (isLoading) {
       component =
         LoadingComponent && reactIs.isValidElementType(LoadingComponent)
           ? React.createElement(LoadingComponent, props)
           : null;
-      component = LoadingComponent
-        ? React.createElement(LoadingComponent, props)
-        : null;
     } else {
       component = <Component {...props} {...cache.getContents()} />;
     }

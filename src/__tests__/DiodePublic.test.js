@@ -177,7 +177,7 @@ test("do not fetch if already in cache", async () => {
   expect(fakeNetworkLayer.sendQueries).toBeCalledTimes(fetchCount);
   expect(container.firstChild).toHaveTextContent("image1");
 
-  // re-render other component with same queries
+  // re-render other component with different queries
   rerender(
     <Diode.CacheProvider value={cache}>
       <ContainerC />

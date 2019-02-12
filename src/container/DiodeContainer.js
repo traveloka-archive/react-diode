@@ -8,7 +8,7 @@ import objectAssign from "object-assign";
 import hoistStatics from "hoist-non-react-statics";
 import DiodeContainerQuery from "../query/DiodeContainerQuery";
 import type { DiodeQueryMap } from "../tools/DiodeTypes";
-import { CacheContext } from "../cache/DiodeCache";
+import { CacheContext, DiodeCache } from "../cache/DiodeCache";
 
 export type DiodeContainer = {
   query: DiodeContainerQuery,
@@ -72,7 +72,7 @@ class DiodeQueryFetcher extends React.Component {
     // If cache is not provided, assume that all resources is already fetched
     // on the server.
     // NOTE: this will also prevent LoadingComponent to be rendered on server
-    if (!cache) {
+    if (!cache || !(cache instanceof DiodeCache)) {
       if (process.env.NODE_ENV !== "production") {
         console.warn(
           "Cache not found. Rendering component without cache contents."

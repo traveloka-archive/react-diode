@@ -2,12 +2,13 @@
  * @flow
  */
 import React from "react";
+import * as reactIs from "react-is";
 import deepExtend from "deep-extend";
 import objectAssign from "object-assign";
 import hoistStatics from "hoist-non-react-statics";
 import DiodeContainerQuery from "../query/DiodeContainerQuery";
 import type { DiodeQueryMap } from "../tools/DiodeTypes";
-import { CacheContext } from "../cache/DiodeCache";
+import { CacheContext, DiodeCache } from "../cache/DiodeCache";
 
 export type DiodeContainer = {
   query: DiodeContainerQuery,
@@ -32,8 +33,11 @@ class DiodeQueryFetcher extends React.Component {
   async componentDidMount() {
     const { cache, query } = this.props;
 
-    // prevent re-renders ?
-    if (cache.hasResolved(query)) {
+    if (!cache || cache.hasResolved(query)) {
+      this.setState({
+        loading: false
+      });
+
       return;
     }
 
@@ -47,20 +51,48 @@ class DiodeQueryFetcher extends React.Component {
   }
 
   render() {
-    const { Component, wrapper, cache, query, ...props } = this.props;
+    const {
+      Component,
+      wrapper,
+      cache,
+      query,
+      loading: LoadingComponent,
+      error: ErrorComponent,
+      ...props
+    } = this.props;
 
     if (this.state.error !== null) {
-      // TODO error handling
-      return <span>{this.state.error.message}</span>;
+      return ErrorComponent && reactIs.isValidElementType(ErrorComponent) ? (
+        React.createElement(ErrorComponent, props)
+      ) : (
+        <span>{this.state.error.message}</span>
+      );
+    }
+
+    // If cache is not provided, assume that all resources is already fetched
+    // on the server.
+    // NOTE: this will also prevent LoadingComponent to be rendered on server
+    if (!cache || !(cache instanceof DiodeCache)) {
+      if (process.env.NODE_ENV !== "production") {
+        console.warn(
+          "Cache not found. Rendering component without cache contents."
+        );
+      }
+      return <Component {...props} />;
     }
 
     const resolved = cache.hasResolved(query);
-    const loading = !resolved && this.state.loading;
+    const isLoading = !resolved && this.state.loading;
+    let component;
 
-    const component = loading ? // TODO async handling
-    null : (
-      <Component {...props} {...cache.getContents()} />
-    );
+    if (isLoading) {
+      component =
+        LoadingComponent && reactIs.isValidElementType(LoadingComponent)
+          ? React.createElement(LoadingComponent, props)
+          : null;
+    } else {
+      component = <Component {...props} {...cache.getContents()} />;
+    }
 
     if (wrapper) {
       return <div {...wrapper}>{component}</div>;
@@ -95,6 +127,8 @@ function createContainerComponent(Component, spec, query) {
                 wrapper={wrapper}
                 query={query}
                 cache={cache}
+                loading={spec.loading}
+                error={spec.error}
               />
             );
           }}

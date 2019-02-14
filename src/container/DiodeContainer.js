@@ -73,11 +73,6 @@ class DiodeQueryFetcher extends React.Component {
     // on the server.
     // NOTE: this will also prevent LoadingComponent to be rendered on server
     if (!cache || !(cache instanceof DiodeCache)) {
-      if (process.env.NODE_ENV !== "production") {
-        console.warn(
-          "Cache not found. Rendering component without cache contents."
-        );
-      }
       return <Component {...props} />;
     }
 

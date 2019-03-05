@@ -1,0 +1,39 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/node:8-jessie
+    working_directory: /home/circleci/build/repo
+
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "package.json" }}
+            - v1-dependencies-
+
+      - run: yarn install --frozen-lockfile
+      - run: yarn add jest-junit jest-html-reporter -D
+
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package.json" }}
+
+      - run:
+          name: Run jest with JUnit reporter
+          command: |
+            mkdir test-result
+            yarn test --ci --runInBand \
+              --reporters=default \
+              --reporters=jest-junit \
+              --reporters=jest-html-reporter
+          environment:
+            JEST_JUNIT_OUTPUT: test-result/junit.xml
+
+      - store_test_results:
+          path: test-result
+
+      - store_artifacts:
+          path: /home/circleci/build/repo/test-report.html
+          destination: test-report.html

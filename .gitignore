@@ -4,3 +4,4 @@ coverage/
 lib/
 .nyc_output
 .next
+reports/

@@ -27,17 +27,17 @@ export type DiodeContainerSpec = {
 class DiodeQueryFetcher extends React.Component {
   state = {
     error: null,
-    loading: true
+    // set default loading state to true
+    // only if cache is provided & hasn't resolved
+    loading:
+      Boolean(this.props.cache) &&
+      !this.props.cache.hasResolved(this.props.query)
   };
 
   async componentDidMount() {
     const { cache, query } = this.props;
 
-    if (!cache || cache.hasResolved(query)) {
-      this.setState({
-        loading: false
-      });
-
+    if (this.state.loading === false) {
       return;
     }
 

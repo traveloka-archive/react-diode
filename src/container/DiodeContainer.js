@@ -27,26 +27,26 @@ export type DiodeContainerSpec = {
 class DiodeQueryFetcher extends React.Component {
   state = {
     error: null,
-    loading: true
+    // set default isLoading state to true
+    // only if cache is provided & hasn't resolved
+    isLoading:
+      this.props.cache instanceof DiodeCache &&
+      !this.props.cache.hasResolved(this.props.query)
   };
 
   async componentDidMount() {
     const { cache, query } = this.props;
 
-    if (!cache || cache.hasResolved(query)) {
-      this.setState({
-        loading: false
-      });
-
+    if (this.state.isLoading === false) {
       return;
     }
 
     try {
       await cache.resolve(query);
-      this.setState({ loading: false });
+      this.setState({ isLoading: false });
     } catch (error) {
       console.error("error", error);
-      this.setState({ error, loading: false });
+      this.setState({ error, isLoading: false });
     }
   }
 
@@ -60,6 +60,7 @@ class DiodeQueryFetcher extends React.Component {
       error: ErrorComponent,
       ...props
     } = this.props;
+    const { isLoading } = this.state;
 
     if (this.state.error !== null) {
       return ErrorComponent && reactIs.isValidElementType(ErrorComponent) ? (
@@ -69,15 +70,6 @@ class DiodeQueryFetcher extends React.Component {
       );
     }
 
-    // If cache is not provided, assume that all resources is already fetched
-    // on the server.
-    // NOTE: this will also prevent LoadingComponent to be rendered on server
-    if (!cache || !(cache instanceof DiodeCache)) {
-      return <Component {...props} />;
-    }
-
-    const resolved = cache.hasResolved(query);
-    const isLoading = !resolved && this.state.loading;
     let component;
 
     if (isLoading) {
@@ -86,7 +78,12 @@ class DiodeQueryFetcher extends React.Component {
           ? React.createElement(LoadingComponent, props)
           : null;
     } else {
-      component = <Component {...props} {...cache.getContents()} />;
+      component = (
+        <Component
+          {...props}
+          {...cache instanceof DiodeCache && cache.getContents()}
+        />
+      );
     }
 
     if (wrapper) {

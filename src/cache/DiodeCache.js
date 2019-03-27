@@ -3,7 +3,7 @@ import Store from "../store/DiodeStore";
 
 export const CacheContext = React.createContext(null);
 
-export const FETCH_ALL_CACHE = "__fac__";
+export const FETCH_ALL_CACHE = "__DIODE_FAC__";
 
 export class DiodeCache {
   constructor(cache, options) {
@@ -37,9 +37,13 @@ export class DiodeCache {
         }
 
         if (innerFragmentKeys.length === 0) {
-          if (cachedFragment && typeof cachedFragment === "object") {
+          if (
+            cachedFragment &&
+            typeof cachedFragment === "object" &&
+            Array.isArray(cache[FETCH_ALL_CACHE])
+          ) {
             // might already cache fetch-all
-            return !cachedFragment[FETCH_ALL_CACHE];
+            return !cache[FETCH_ALL_CACHE].includes(fragment);
           }
 
           return cachedFragment === undefined;

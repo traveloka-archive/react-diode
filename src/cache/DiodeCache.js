@@ -3,7 +3,7 @@ import Store from "../store/DiodeStore";
 
 export const CacheContext = React.createContext(null);
 
-export const FETCH_ALL_CACHE = "__DIODE_FAC__";
+export const FETCH_ALL_CACHE = "__fac__";
 
 export class DiodeCache {
   constructor(cache, options) {

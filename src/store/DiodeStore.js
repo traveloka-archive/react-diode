@@ -25,8 +25,8 @@ import type { DiodeQueryRequest } from "../query/DiodeQueryRequest";
 
 function markFetchAllCache(response, queries) {
   // mark special fetch-all case so our cache is aware
-  try {
-    queries.forEach(query => {
+  queries.forEach(query => {
+    try {
       Object.keys(query.fragment).forEach(fragmentKey => {
         const fragmentResponse = response[query.type][fragmentKey];
         if (
@@ -40,8 +40,8 @@ function markFetchAllCache(response, queries) {
           response[query.type][FETCH_ALL_CACHE].push(fragmentKey);
         }
       });
-    });
-  } catch (err) {}
+    } catch (err) {}
+  });
 
   return response;
 }

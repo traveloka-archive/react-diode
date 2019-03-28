@@ -408,3 +408,48 @@ test("Render error component when cache fails to resolve", async () => {
   await waitForElement(() => container.firstChild);
   expect(container.firstChild).toHaveTextContent("Error Component");
 });
+
+test("When fragment response is an Array and mapped after Object.values(response)", async () => {
+  fakeNetworkLayer.sendQueries.mockResolvedValueOnce({
+    imageSlider: {
+      data: {
+        sample: [
+          { titles: ["image1_a", "image1_b"] },
+          { titles: ["image2_a", "image2_b"] }
+        ]
+      }
+    }
+  });
+
+  const Component = props => {
+    const images = props.imageSlider.sample;
+
+    return (
+      <React.Fragment>
+        {Object.values(images).map(({ titles }) => {
+          const title = titles.join("-");
+
+          return <div key={title}>{title}</div>;
+        })}
+      </React.Fragment>
+    );
+  };
+
+  const Container = Diode.createRootContainer(Component, {
+    queries: {
+      imageSlider: Diode.createQuery(ImageSliderQuery, {
+        sample: {}
+      })
+    }
+  });
+
+  const initialCache = await Diode.Store.forceFetch(Container);
+
+  const { container, getByText } = render(
+    <Component imageSlider={initialCache.imageSlider} />
+  );
+
+  expect(container.children.length).toBe(2);
+  expect(getByText("image1_a-image1_b")).toBeInTheDocument();
+  expect(getByText("image2_a-image2_b")).toBeInTheDocument();
+});

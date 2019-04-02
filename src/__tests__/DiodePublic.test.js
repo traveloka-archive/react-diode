@@ -411,8 +411,6 @@ test("Render error component when cache fails to resolve", async () => {
 });
 
 test("Make sure fetch-all flag doesn't interfere with result", async () => {
-  console.error = jest.fn();
-
   fakeNetworkLayer.sendQueries.mockResolvedValueOnce({
     imageResource: {
       data: {
@@ -461,6 +459,4 @@ test("Make sure fetch-all flag doesn't interfere with result", async () => {
   expect(container.children.length).toBe(2);
   expect(getByText("first-image")).toBeInTheDocument();
   expect(getByText("second-image")).toBeInTheDocument();
-
-  expect(console.error).not.toHaveBeenCalled();
 });

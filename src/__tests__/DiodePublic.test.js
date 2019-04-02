@@ -5,6 +5,7 @@ import "react-testing-library/cleanup-after-each";
 
 import Diode from "../DiodePublic";
 import ContentResourceQuery from "./fixtures/ContentResourceQuery";
+import ImageResourceQuery from "./fixtures/ImageResourceQuery";
 import ImageSliderQuery from "./fixtures/ImageSliderQuery";
 
 const fakeNetworkLayer = {
@@ -409,35 +410,43 @@ test("Render error component when cache fails to resolve", async () => {
   expect(container.firstChild).toHaveTextContent("Error Component");
 });
 
-test("When fragment response is an Array and mapped after Object.values(response)", async () => {
+test("Make sure fetch-all flag doesn't interfere with result", async () => {
+  console.error = jest.fn();
+
   fakeNetworkLayer.sendQueries.mockResolvedValueOnce({
-    imageSlider: {
+    imageResource: {
       data: {
-        sample: [
-          { titles: ["image1_a", "image1_b"] },
-          { titles: ["image2_a", "image2_b"] }
-        ]
+        imageResources: {
+          sample: {
+            image1: {
+              key: "image-1",
+              title: "first-image"
+            },
+            image2: {
+              key: "image-2",
+              title: "second-image"
+            }
+          }
+        }
       }
     }
   });
 
   const Component = props => {
-    const images = props.imageSlider.sample;
+    const { images } = props;
 
     return (
       <React.Fragment>
-        {Object.values(images).map(({ titles }) => {
-          const title = titles.join("-");
-
-          return <div key={title}>{title}</div>;
-        })}
+        {images.map(({ key, title }) => (
+          <div key={key}>{title}</div>
+        ))}
       </React.Fragment>
     );
   };
 
   const Container = Diode.createRootContainer(Component, {
     queries: {
-      imageSlider: Diode.createQuery(ImageSliderQuery, {
+      imageResource: Diode.createQuery(ImageResourceQuery, {
         sample: {}
       })
     }
@@ -446,10 +455,12 @@ test("When fragment response is an Array and mapped after Object.values(response
   const initialCache = await Diode.Store.forceFetch(Container);
 
   const { container, getByText } = render(
-    <Component imageSlider={initialCache.imageSlider} />
+    <Component images={Object.values(initialCache.imageResource.sample)} />
   );
 
   expect(container.children.length).toBe(2);
-  expect(getByText("image1_a-image1_b")).toBeInTheDocument();
-  expect(getByText("image2_a-image2_b")).toBeInTheDocument();
+  expect(getByText("first-image")).toBeInTheDocument();
+  expect(getByText("second-image")).toBeInTheDocument();
+
+  expect(console.error).not.toHaveBeenCalled();
 });

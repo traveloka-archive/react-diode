@@ -23,11 +23,6 @@ import type {
 } from "../tools/DiodeTypes";
 import type { DiodeQueryRequest } from "../query/DiodeQueryRequest";
 
-/*
-  Possible Errors:
-  1. Fragments of the query is not an object.
-*/
-
 function markFetchAllCache(response, queries) {
   // mark special fetch-all case so our cache is aware
   queries.forEach(query => {
@@ -38,12 +33,14 @@ function markFetchAllCache(response, queries) {
           Object.keys(query.fragment[fragmentKey]).length === 0 &&
           fragmentResponse
         ) {
-          fragmentResponse[FETCH_ALL_CACHE] = true;
+          if (Array.isArray(response[query.type][FETCH_ALL_CACHE]) === false) {
+            response[query.type][FETCH_ALL_CACHE] = [];
+          }
+
+          response[query.type][FETCH_ALL_CACHE].push(fragmentKey);
         }
       });
-    } catch (err) {
-      throw new Error("Query fragments must be an Object type");
-    }
+    } catch (err) {}
   });
 
   return response;
@@ -125,7 +122,10 @@ class DiodeStore {
         // If fragment is already cached and all data in the fragment is
         // already fetched, remove all fragments. Otherwise, fetch all
         // fragments.
-        if (cachedFragment && cachedFragment[FETCH_ALL_CACHE]) {
+        if (
+          Array.isArray(cache[FETCH_ALL_CACHE]) &&
+          cache[FETCH_ALL_CACHE].includes(fragmentKey)
+        ) {
           return;
         }
 

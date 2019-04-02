@@ -37,9 +37,9 @@ export class DiodeCache {
         }
 
         if (innerFragmentKeys.length === 0) {
-          if (cachedFragment && typeof cachedFragment === "object") {
+          if (Array.isArray(cache[FETCH_ALL_CACHE])) {
             // might already cache fetch-all
-            return !cachedFragment[FETCH_ALL_CACHE];
+            return !cache[FETCH_ALL_CACHE].includes(fragment);
           }
 
           return cachedFragment === undefined;

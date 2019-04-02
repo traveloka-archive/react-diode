@@ -5,6 +5,7 @@ import "react-testing-library/cleanup-after-each";
 
 import Diode from "../DiodePublic";
 import ContentResourceQuery from "./fixtures/ContentResourceQuery";
+import ImageResourceQuery from "./fixtures/ImageResourceQuery";
 import ImageSliderQuery from "./fixtures/ImageSliderQuery";
 
 const fakeNetworkLayer = {
@@ -407,4 +408,55 @@ test("Render error component when cache fails to resolve", async () => {
   // When cache fails to resolve, should display error component
   await waitForElement(() => container.firstChild);
   expect(container.firstChild).toHaveTextContent("Error Component");
+});
+
+test("Make sure fetch-all flag doesn't interfere with result", async () => {
+  fakeNetworkLayer.sendQueries.mockResolvedValueOnce({
+    imageResource: {
+      data: {
+        imageResources: {
+          sample: {
+            image1: {
+              key: "image-1",
+              title: "first-image"
+            },
+            image2: {
+              key: "image-2",
+              title: "second-image"
+            }
+          }
+        }
+      }
+    }
+  });
+
+  const Component = props => {
+    const { images } = props;
+
+    return (
+      <React.Fragment>
+        {images.map(({ key, title }) => (
+          <div key={key}>{title}</div>
+        ))}
+      </React.Fragment>
+    );
+  };
+
+  const Container = Diode.createRootContainer(Component, {
+    queries: {
+      imageResource: Diode.createQuery(ImageResourceQuery, {
+        sample: {}
+      })
+    }
+  });
+
+  const initialCache = await Diode.Store.forceFetch(Container);
+
+  const { container, getByText } = render(
+    <Component images={Object.values(initialCache.imageResource.sample)} />
+  );
+
+  expect(container.children.length).toBe(2);
+  expect(getByText("first-image")).toBeInTheDocument();
+  expect(getByText("second-image")).toBeInTheDocument();
 });

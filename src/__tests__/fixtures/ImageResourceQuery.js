@@ -1,4 +1,4 @@
-import Diode from "react-diode";
+import Diode from "../../DiodePublic";
 
 export default {
   type: "imageResource",

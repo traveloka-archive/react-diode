@@ -1,4 +1,5 @@
 import React from "react";
+import ReactDOMServer from "react-dom/server";
 import { render, waitForElement } from "react-testing-library";
 import "jest-dom/extend-expect";
 import "react-testing-library/cleanup-after-each";
@@ -459,4 +460,62 @@ test("Make sure fetch-all flag doesn't interfere with result", async () => {
   expect(container.children.length).toBe(2);
   expect(getByText("first-image")).toBeInTheDocument();
   expect(getByText("second-image")).toBeInTheDocument();
+});
+
+// Not all fragment have deep structure, and reshaping response
+// is not enforced yet
+//
+// One easy example is when sending query variables through fragment
+// without returning response back
+test("allow shallow query fragments", async () => {
+  const HotelBreadCrumbQuery = {
+    type: "hotelBreadcrumb",
+    request: () => Diode.queryRequest("", "", {}),
+    resolve: response => response.data
+  };
+
+  const ComponentA = props => <p>{props.hotelBreadcrumb.elements[0].text}</p>;
+  const ContainerA = Diode.createContainer(ComponentA, {
+    queries: {
+      hotelBreadcrumb: Diode.createQuery(HotelBreadCrumbQuery, {
+        x: null,
+        elements: null
+      })
+    }
+  });
+
+  const ComponentB = props => (
+    <main>
+      <ContainerA />
+    </main>
+  );
+  const ContainerB = Diode.createRootContainer(ComponentB, {
+    children: [ContainerA],
+    queries: {
+      hotelBreadcrumb: Diode.createQuery(HotelBreadCrumbQuery, {
+        id: "$id"
+      })
+    }
+  });
+
+  fakeNetworkLayer.sendQueries.mockResolvedValueOnce({
+    hotelBreadcrumb: {
+      data: {
+        elements: [
+          {
+            text: "hola"
+          }
+        ]
+      }
+    }
+  });
+
+  const data = await Diode.Store.forceFetch(ContainerB);
+  const cache = Diode.createCache(data);
+  const { getByText } = render(
+    <Diode.CacheProvider value={cache}>
+      <ContainerB />
+    </Diode.CacheProvider>
+  );
+  expect(getByText("hola")).toBeInTheDocument();
 });

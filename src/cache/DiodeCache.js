@@ -28,14 +28,16 @@ export class DiodeCache {
       const query = containerQuery.map[type];
       return Object.keys(query.fragmentStructure).some(fragment => {
         const cachedFragment = cache[fragment];
-        const innerFragmentKeys = Object.keys(
-          query.fragmentStructure[fragment]
-        );
-
         if (Array.isArray(cachedFragment)) {
           return false;
         }
 
+        const innerFragment = query.fragmentStructure[fragment];
+        if (!innerFragment || typeof innerFragment !== "object") {
+          return false;
+        }
+
+        const innerFragmentKeys = Object.keys(innerFragment);
         if (innerFragmentKeys.length === 0) {
           if (Array.isArray(cache[FETCH_ALL_CACHE])) {
             // might already cache fetch-all

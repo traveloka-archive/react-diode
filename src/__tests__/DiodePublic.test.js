@@ -194,21 +194,33 @@ test("do not fetch if already in cache", async () => {
 
 test("able to understand fetch-all pattern", async () => {
   const Component = props => <div>{props.contentResource.first.time}</div>;
-  const ComponentX = props => <div>{props.contentResource.hello.world}</div>;
-  const ComponentY = props => <div>{props.contentResource.hello.loka}</div>;
-  const ComponentZ = props => <div>{props.contentResource.hello.airy}</div>;
-  const Component$ = props => <div>{props.contentResource.first.kiss}</div>;
+  const Component1 = props => <div>{props.contentResource.first.kiss}</div>;
+  const Component2 = props => <div>{props.contentResource.hello.world}</div>;
+  const Component3 = props => <div>{props.contentResource.hello.loka}</div>;
+  const Component4 = props => <div>{props.contentResource.hello.airy}</div>;
+  const Component5 = props => <div>{props.contentResource.first.kiss}</div>;
 
   const Container = Diode.createRootContainer(Component, {
     queries: {
       contentResource: Diode.createQuery(ContentResourceQuery, {
         // forceFetch-ed
+        first: {
+          time: null
+        }
+      })
+    }
+  });
+
+  const Container1 = Diode.createRootContainer(Component1, {
+    queries: {
+      contentResource: Diode.createQuery(ContentResourceQuery, {
+        // fetch all, should fetch
         first: {}
       })
     }
   });
 
-  const ContainerX = Diode.createRootContainer(ComponentX, {
+  const Container2 = Diode.createRootContainer(Component2, {
     queries: {
       contentResource: Diode.createQuery(ContentResourceQuery, {
         // fetch single, different key, should be fetched
@@ -219,7 +231,7 @@ test("able to understand fetch-all pattern", async () => {
     }
   });
 
-  const ContainerY = Diode.createRootContainer(ComponentY, {
+  const Container3 = Diode.createRootContainer(Component3, {
     queries: {
       contentResource: Diode.createQuery(ContentResourceQuery, {
         // fetch all should be fetched
@@ -228,7 +240,7 @@ test("able to understand fetch-all pattern", async () => {
     }
   });
 
-  const ContainerZ = Diode.createRootContainer(ComponentZ, {
+  const Container4 = Diode.createRootContainer(Component4, {
     queries: {
       contentResource: Diode.createQuery(ContentResourceQuery, {
         // fetch single, should be ignored
@@ -239,7 +251,7 @@ test("able to understand fetch-all pattern", async () => {
     }
   });
 
-  const Container$ = Diode.createRootContainer(Component$, {
+  const Container5 = Diode.createRootContainer(Component5, {
     queries: {
       contentResource: Diode.createQuery(ContentResourceQuery, {
         // fetch all, should be ignored
@@ -249,20 +261,32 @@ test("able to understand fetch-all pattern", async () => {
   });
 
   fakeNetworkLayer.sendQueries
-    // 1st fetch: 1 key, all CR entries
+    // 1st fetch: 1 key, 1 CR entry
+    .mockResolvedValueOnce({
+      contentResource: {
+        data: {
+          contentResources: {
+            first: {
+              time: "hi"
+            }
+          }
+        }
+      }
+    })
+    // 2st fetch: 1 key, all CR entries
     .mockResolvedValueOnce({
       contentResource: {
         data: {
           contentResources: {
             first: {
               time: "hi",
-              kiss: "love"
+              kiss: "<3"
             }
           }
         }
       }
     })
-    // 1st fetch: 1 key, 1 CR entry
+    // 3rd fetch: 1 key, 1 CR entry
     .mockResolvedValueOnce({
       contentResource: {
         data: {
@@ -274,7 +298,7 @@ test("able to understand fetch-all pattern", async () => {
         }
       }
     })
-    // 2nd fetch: 1 key, all CR entries
+    // 4th fetch: 1 key, all CR entries
     .mockResolvedValueOnce({
       contentResource: {
         data: {
@@ -297,47 +321,58 @@ test("able to understand fetch-all pattern", async () => {
   const cache = Diode.createCache(initialCache);
   const { container, rerender } = render(
     <Diode.CacheProvider value={cache}>
-      <ContainerX />
+      <Container1 />
     </Diode.CacheProvider>
   );
 
-  // fetch single, should fetch
+  // fetch all first { }, should fetch
+  await waitForElement(() => container.firstChild);
+  expect(fakeNetworkLayer.sendQueries).toBeCalledTimes(++fetchCount);
+  expect(container.firstChild).toHaveTextContent("<3");
+
+  rerender(
+    <Diode.CacheProvider value={cache}>
+      <Container2 />
+    </Diode.CacheProvider>
+  );
+
+  // fetch single hello { world }, should fetch
   await waitForElement(() => container.firstChild);
   expect(fakeNetworkLayer.sendQueries).toBeCalledTimes(++fetchCount);
   expect(container.firstChild).toHaveTextContent("hello, world!");
 
   rerender(
     <Diode.CacheProvider value={cache}>
-      <ContainerY />
+      <Container3 />
     </Diode.CacheProvider>
   );
 
-  // fetch all, should fetch
+  // fetch all hello { }, should fetch
   await waitForElement(() => container.firstChild);
   expect(fakeNetworkLayer.sendQueries).toBeCalledTimes(++fetchCount);
   expect(container.firstChild).toHaveTextContent("Hello, Traveloka!");
 
   rerender(
     <Diode.CacheProvider value={cache}>
-      <ContainerZ />
+      <Container4 />
     </Diode.CacheProvider>
   );
 
-  // fetch single, should read from cache
+  // fetch single hello { airy }, should read from cache
   await waitForElement(() => container.firstChild);
   expect(fakeNetworkLayer.sendQueries).toBeCalledTimes(fetchCount);
   expect(container.firstChild).toHaveTextContent("Hi, Airy!");
 
   rerender(
     <Diode.CacheProvider value={cache}>
-      <Container$ />
+      <Container5 />
     </Diode.CacheProvider>
   );
 
-  // fetch all, should read from cache
+  // fetch all hello { }, should read from cache
   await waitForElement(() => container.firstChild);
   expect(fakeNetworkLayer.sendQueries).toBeCalledTimes(fetchCount);
-  expect(container.firstChild).toHaveTextContent("love");
+  expect(container.firstChild).toHaveTextContent("<3");
 });
 
 test("Render loading component when cache is not resolved", async () => {

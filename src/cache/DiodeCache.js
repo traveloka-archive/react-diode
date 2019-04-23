@@ -44,7 +44,7 @@ export class DiodeCache {
             return !cache[FETCH_ALL_CACHE].includes(fragment);
           }
 
-          return cachedFragment === undefined;
+          return true;
         }
 
         return innerFragmentKeys.some(key => {

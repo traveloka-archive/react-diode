@@ -116,6 +116,11 @@ class DiodeStore {
     Object.keys(query.fragment).forEach(fragmentKey => {
       const cachedFragment = cache[fragmentKey];
       const innerFragment = query.fragment[fragmentKey];
+
+      if (!innerFragment) {
+        return;
+      }
+
       const innerFragmentKeys = Object.keys(innerFragment);
 
       if (innerFragmentKeys.length === 0) {

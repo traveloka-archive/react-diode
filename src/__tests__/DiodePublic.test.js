@@ -522,11 +522,17 @@ test("allow shallow query fragments", async () => {
   const ComponentB = props => (
     <main>
       <ContainerA />
+      <aside>{props.contentResource.haha.b}</aside>
     </main>
   );
   const ContainerB = Diode.createRootContainer(ComponentB, {
     children: [ContainerA],
     queries: {
+      contentResource: Diode.createQuery(ContentResourceQuery, {
+        haha: {
+          b: null
+        }
+      }),
       hotelBreadcrumb: Diode.createQuery(HotelBreadCrumbQuery, {
         id: "$id"
       })
@@ -542,15 +548,38 @@ test("allow shallow query fragments", async () => {
           }
         ]
       }
+    },
+    contentResource: {
+      data: {
+        contentResources: {
+          haha: {
+            b: "move"
+          }
+        }
+      }
     }
   });
 
-  const data = await Diode.Store.forceFetch(ContainerB);
-  const cache = Diode.createCache(data);
-  const { getByText } = render(
+  // fake incomplete cache to force client-side fetch
+  const cache = Diode.createCache({
+    hotelBreadcrumb: {
+      // only `elements`, there's no `x`
+      elements: [
+        {
+          text: "hola"
+        }
+      ]
+    }
+  });
+  const { getByText, container } = render(
     <Diode.CacheProvider value={cache}>
       <ContainerB />
     </Diode.CacheProvider>
   );
+
+  await waitForElement(() => container.querySelector("p"));
   expect(getByText("hola")).toBeInTheDocument();
+
+  await waitForElement(() => container.querySelector("aside"));
+  expect(getByText("move")).toBeInTheDocument();
 });

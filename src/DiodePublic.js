@@ -8,11 +8,13 @@ import {
   createQueryRequest,
   createPendingQueryRequest
 } from "./query/DiodeQueryRequest";
+import DiodeRootQuery from "./query/DiodeRootQuery";
 
 const DiodePublic = {
   Store: DiodeStore,
   CacheProvider: CacheContext.Provider,
   QueryTypes: DiodeQueryTypes,
+  RootQuery: DiodeRootQuery,
 
   createCache,
   createContainer,

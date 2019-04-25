@@ -1,5 +1,10 @@
 workflow "Publish to npm" {
-  resolves = ["test", "publish"]
+  resolves = [
+    "test",
+    "publish",
+    "new version",
+    "install",
+  ]
   on = "push"
 }
 
@@ -10,14 +15,14 @@ action "new version" {
 
 action "build " {
   uses = "actions/npm@master"
-  args = "build"
-  needs = ["new version"]
+  args = "run build"
+  needs = ["install"]
 }
 
 action "test" {
   uses = "actions/npm@master"
-  args = "test"
-  needs = ["new version"]
+  args = "run test"
+  needs = ["install"]
 }
 
 action "publish" {
@@ -25,4 +30,10 @@ action "publish" {
   needs = ["build ", "test"]
   args = "publish --access public"
   secrets = ["NPM_AUTH_TOKEN"]
+}
+
+action "install" {
+  uses = "actions/npm@59b64a598378f31e49cb76f27d6f3312b582f680"
+  needs = ["new version"]
+  args = "ci"
 }

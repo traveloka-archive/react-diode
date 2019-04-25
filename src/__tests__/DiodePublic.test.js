@@ -152,32 +152,6 @@ test("do not fetch if already in cache", async () => {
   expect(fakeNetworkLayer.sendQueries).toBeCalledTimes(++fetchCount);
   expect(container.firstChild).toHaveTextContent("new world!");
 
-  /*
-    const ContainerA = Diode.createRootContainer(ComponentA, {
-    queries: {
-      imageSlider: Diode.createQuery(ImageSliderQuery, {
-        sample: {}
-      })
-    }
-  });
-
-  const ContainerB = Diode.createRootContainer(ComponentB, {
-    queries: {
-      imageSlider: Diode.createQuery(ImageSliderQuery, {
-        sample: {}
-      })
-    }
-  });
-
-  const ContainerC = Diode.createRootContainer(ComponentC, {
-    queries: {
-      imageSlider: Diode.createQuery(ImageSliderQuery, {
-        test: {}
-      })
-    }
-  });
-  */
-
   // re-render other component with different queries
   rerender(
     <Diode.CacheProvider value={cache}>

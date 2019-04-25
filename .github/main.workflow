@@ -14,14 +14,14 @@ action "new version" {
 }
 
 action "build " {
-  uses = "actions/npm@master"
-  args = "run build"
+  uses = "nuxt/actions-yarn@node-10"
+  args = "build"
   needs = ["install"]
 }
 
 action "test" {
-  uses = "actions/npm@master"
-  args = "run test"
+  uses = "nuxt/actions-yarn@node-10"
+  args = "test"
   needs = ["install"]
 }
 
@@ -33,7 +33,7 @@ action "publish" {
 }
 
 action "install" {
-  uses = "actions/npm@59b64a598378f31e49cb76f27d6f3312b582f680"
+  uses = "nuxt/actions-yarn@node-10"
   needs = ["new version"]
-  args = "ci"
+  args = "install --pure-lockfile"
 }

@@ -1,9 +1,8 @@
 import React from "react";
 import Store from "../store/DiodeStore";
+import { FETCH_ALL_CACHE } from "./DiodeCacheConstant";
 
 export const CacheContext = React.createContext(null);
-
-export const FETCH_ALL_CACHE = "__fac__";
 
 export class DiodeCache {
   constructor(cache, options) {

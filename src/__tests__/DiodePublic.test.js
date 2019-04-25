@@ -1,5 +1,4 @@
 import React from "react";
-import ReactDOMServer from "react-dom/server";
 import { render, waitForElement } from "react-testing-library";
 import "jest-dom/extend-expect";
 import "react-testing-library/cleanup-after-each";
@@ -24,15 +23,9 @@ test("do not fetch if already in cache", async () => {
   const ComponentX = props => <div>{props.contentResource.hello.world}</div>;
   const ComponentY = props => <div>{props.contentResource.hello.world}</div>;
   const ComponentZ = props => <div>{props.contentResource.new.world}</div>;
-  const ComponentA = props => (
-    <div>{props.imageSlider.sample.map(image => image.title)}</div>
-  );
-  const ComponentB = props => (
-    <div>{props.imageSlider.sample.map(image => image.title)}</div>
-  );
-  const ComponentC = props => (
-    <div>{props.imageSlider.test.map(image => image.title)}</div>
-  );
+  const ComponentA = props => <div>{props.contentResource.sample.title}</div>;
+  const ComponentB = props => <div>{props.contentResource.sample.title}</div>;
+  const ComponentC = props => <div>{props.contentResource.test.title}</div>;
 
   const ContainerX = Diode.createRootContainer(ComponentX, {
     queries: {
@@ -66,7 +59,7 @@ test("do not fetch if already in cache", async () => {
 
   const ContainerA = Diode.createRootContainer(ComponentA, {
     queries: {
-      imageSlider: Diode.createQuery(ImageSliderQuery, {
+      contentResource: Diode.createQuery(ContentResourceQuery, {
         sample: {}
       })
     }
@@ -74,7 +67,7 @@ test("do not fetch if already in cache", async () => {
 
   const ContainerB = Diode.createRootContainer(ComponentB, {
     queries: {
-      imageSlider: Diode.createQuery(ImageSliderQuery, {
+      contentResource: Diode.createQuery(ContentResourceQuery, {
         sample: {}
       })
     }
@@ -82,7 +75,7 @@ test("do not fetch if already in cache", async () => {
 
   const ContainerC = Diode.createRootContainer(ComponentC, {
     queries: {
-      imageSlider: Diode.createQuery(ImageSliderQuery, {
+      contentResource: Diode.createQuery(ContentResourceQuery, {
         test: {}
       })
     }
@@ -112,16 +105,20 @@ test("do not fetch if already in cache", async () => {
       }
     })
     .mockResolvedValueOnce({
-      imageSlider: {
+      contentResource: {
         data: {
-          sample: [{ title: "image1" }]
+          contentResources: {
+            sample: { title: "text1" }
+          }
         }
       }
     })
     .mockResolvedValueOnce({
-      imageSlider: {
+      contentResource: {
         data: {
-          test: [{ title: "image2" }]
+          contentResources: {
+            test: { title: "text2" }
+          }
         }
       }
     });
@@ -155,6 +152,32 @@ test("do not fetch if already in cache", async () => {
   expect(fakeNetworkLayer.sendQueries).toBeCalledTimes(++fetchCount);
   expect(container.firstChild).toHaveTextContent("new world!");
 
+  /*
+    const ContainerA = Diode.createRootContainer(ComponentA, {
+    queries: {
+      imageSlider: Diode.createQuery(ImageSliderQuery, {
+        sample: {}
+      })
+    }
+  });
+
+  const ContainerB = Diode.createRootContainer(ComponentB, {
+    queries: {
+      imageSlider: Diode.createQuery(ImageSliderQuery, {
+        sample: {}
+      })
+    }
+  });
+
+  const ContainerC = Diode.createRootContainer(ComponentC, {
+    queries: {
+      imageSlider: Diode.createQuery(ImageSliderQuery, {
+        test: {}
+      })
+    }
+  });
+  */
+
   // re-render other component with different queries
   rerender(
     <Diode.CacheProvider value={cache}>
@@ -165,19 +188,7 @@ test("do not fetch if already in cache", async () => {
   // different key, fetch again
   await waitForElement(() => container.firstChild);
   expect(fakeNetworkLayer.sendQueries).toBeCalledTimes(++fetchCount);
-  expect(container.firstChild).toHaveTextContent("image1");
-
-  // re-render other component with same queries
-  rerender(
-    <Diode.CacheProvider value={cache}>
-      <ContainerB />
-    </Diode.CacheProvider>
-  );
-
-  // already in cache, no additional fetch
-  await waitForElement(() => container.firstChild);
-  expect(fakeNetworkLayer.sendQueries).toBeCalledTimes(fetchCount);
-  expect(container.firstChild).toHaveTextContent("image1");
+  expect(container.firstChild).toHaveTextContent("text1");
 
   // re-render other component with different queries
   rerender(
@@ -186,10 +197,22 @@ test("do not fetch if already in cache", async () => {
     </Diode.CacheProvider>
   );
 
-  // different key, fetch again
+  // already in cache, no additional fetch
   await waitForElement(() => container.firstChild);
   expect(fakeNetworkLayer.sendQueries).toBeCalledTimes(++fetchCount);
-  expect(container.firstChild).toHaveTextContent("image2");
+  expect(container.firstChild).toHaveTextContent("text2");
+
+  // re-render other component with same queries
+  rerender(
+    <Diode.CacheProvider value={cache}>
+      <ContainerB />
+    </Diode.CacheProvider>
+  );
+
+  // different key, fetch again
+  await waitForElement(() => container.firstChild);
+  expect(fakeNetworkLayer.sendQueries).toBeCalledTimes(fetchCount);
+  expect(container.firstChild).toHaveTextContent("text1");
 });
 
 test("able to understand fetch-all pattern", async () => {

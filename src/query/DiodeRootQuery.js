@@ -1,7 +1,7 @@
 /**
  * @flow
  */
-import deepExtend from "deep-extend";
+import mergeWith from "lodash.mergewith";
 import type DiodeContainerQuery from "./DiodeContainerQuery";
 import type { DiodeQuery, Variables } from "../tools/DiodeTypes";
 
@@ -30,7 +30,7 @@ class DiodeRootQuery {
    *
    */
   setVariables(variables: Variables): void {
-    deepExtend(this._variables, variables);
+    mergeWith(this._variables, variables);
   }
 
   /**

@@ -172,6 +172,8 @@ class DiodeStore {
       .filter(Boolean);
 
     const response = await this._fetchQueries(queries, options);
+    // customizer function is required. Otherwise, __fac__ array in cache will be
+    // replaced, not concat when updating cache
     mergeWith(
       this.cache,
       markFetchAllCache(response, queries),

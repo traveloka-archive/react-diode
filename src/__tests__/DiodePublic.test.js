@@ -24,8 +24,8 @@ test("do not fetch if already in cache", async () => {
   const ComponentY = props => <div>{props.contentResource.hello.world}</div>;
   const ComponentZ = props => <div>{props.contentResource.new.world}</div>;
   const ComponentA = props => <div>{props.contentResource.sample.title}</div>;
-  const ComponentB = props => <div>{props.contentResource.sample.title}</div>;
-  const ComponentC = props => <div>{props.contentResource.test.title}</div>;
+  const ComponentB = props => <div>{props.contentResource.test.title}</div>;
+  const ComponentC = props => <div>{props.contentResource.sample.title}</div>;
 
   const ContainerX = Diode.createRootContainer(ComponentX, {
     queries: {
@@ -68,7 +68,7 @@ test("do not fetch if already in cache", async () => {
   const ContainerB = Diode.createRootContainer(ComponentB, {
     queries: {
       contentResource: Diode.createQuery(ContentResourceQuery, {
-        sample: {}
+        test: {}
       })
     }
   });
@@ -76,7 +76,7 @@ test("do not fetch if already in cache", async () => {
   const ContainerC = Diode.createRootContainer(ComponentC, {
     queries: {
       contentResource: Diode.createQuery(ContentResourceQuery, {
-        test: {}
+        sample: {}
       })
     }
   });
@@ -167,7 +167,7 @@ test("do not fetch if already in cache", async () => {
   // re-render other component with different queries
   rerender(
     <Diode.CacheProvider value={cache}>
-      <ContainerC />
+      <ContainerB />
     </Diode.CacheProvider>
   );
 
@@ -179,7 +179,7 @@ test("do not fetch if already in cache", async () => {
   // re-render other component with same queries
   rerender(
     <Diode.CacheProvider value={cache}>
-      <ContainerB />
+      <ContainerC />
     </Diode.CacheProvider>
   );
 

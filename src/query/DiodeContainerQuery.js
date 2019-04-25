@@ -1,7 +1,7 @@
 /**
  * @flow
  */
-import deepExtend from "deep-extend";
+import mergeWith from "lodash.mergewith";
 import type { DiodeQueryMap } from "../tools/DiodeTypes";
 import type { DiodeContainer } from "../container/DiodeContainer";
 
@@ -66,8 +66,8 @@ class DiodeContainerQuery {
       if (existingQueryType) {
         const { fragmentStructure: existingFragment } = existingQueryType;
         const { fragmentStructure: newFragment } = query;
-        deepExtend(existingFragment, newFragment);
-        deepExtend(existingQueryType.params, query.params);
+        mergeWith(existingFragment, newFragment);
+        mergeWith(existingQueryType.params, query.params);
       } else if (query.type) {
         this._queryTypeMap[query.type] = query;
       } else {
@@ -105,7 +105,7 @@ class DiodeContainerQuery {
         if (existingQueryType) {
           const { fragmentStructure: existingFragment } = existingQueryType;
           const { fragmentStructure: newFragment } = childQuery;
-          deepExtend(existingFragment, newFragment);
+          mergeWith(existingFragment, newFragment);
         } else {
           this._queryTypeMap[childQuery.type] = childQuery;
         }

@@ -1,7 +1,7 @@
 /**
  * @flow
  */
-import deepExtend from "deep-extend";
+import mergeWith from "lodash.mergewith";
 import resolveContainerProps from "../container/resolveContainerProps";
 import DiodeNetworkLayer from "../network/DiodeNetworkLayer";
 import DiodeRootQuery from "../query/DiodeRootQuery";
@@ -12,7 +12,7 @@ import {
   getQueryRequests,
   generateQueryRequest
 } from "../query/DiodeQueryRequest";
-import { FETCH_ALL_CACHE } from "../cache/DiodeCache";
+import { FETCH_ALL_CACHE } from "../cache/DiodeCacheConstant";
 
 import type { DiodeRootContainer } from "../container/DiodeRootContainer";
 import type {
@@ -172,7 +172,17 @@ class DiodeStore {
       .filter(Boolean);
 
     const response = await this._fetchQueries(queries, options);
-    deepExtend(this.cache, markFetchAllCache(response, queries));
+    // customizer function is required. Otherwise, __fac__ array in cache will be
+    // replaced, not concat when updating cache
+    mergeWith(
+      this.cache,
+      markFetchAllCache(response, queries),
+      function customizer(objValue, srcValue) {
+        if (Array.isArray(objValue)) {
+          return objValue.concat(srcValue);
+        }
+      }
+    );
   }
 
   /**

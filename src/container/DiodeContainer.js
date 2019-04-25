@@ -3,7 +3,7 @@
  */
 import React from "react";
 import * as reactIs from "react-is";
-import deepExtend from "deep-extend";
+import mergeWith from "lodash.mergewith";
 import objectAssign from "object-assign";
 import hoistStatics from "hoist-non-react-statics";
 import DiodeContainerQuery from "../query/DiodeContainerQuery";
@@ -182,7 +182,7 @@ export function createContainer(
     }
   };
 
-  ContainerConstructor.query = deepExtend(query, Component.query);
+  ContainerConstructor.query = mergeWith(query, Component.query);
   ContainerConstructor.displayName = containerName;
   ContainerConstructor.componentName = componentName;
 

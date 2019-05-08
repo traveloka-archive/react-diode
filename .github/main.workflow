@@ -1,9 +1,6 @@
 workflow "Publish to npm" {
   resolves = [
-    "test",
-    "publish",
-    "new version",
-    "install",
+    "new version"
   ]
   on = "push"
 }

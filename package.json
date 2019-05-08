@@ -36,6 +36,7 @@
   },
   "homepage": "https://github.com/traveloka/react-diode#readme",
   "dependencies": {
+    "deep-extend": "^0.6.0",
     "hoist-non-react-statics": "^2.5.0",
     "lodash.find": "^4.3.0",
     "lodash.mergewith": "^4.6.1",

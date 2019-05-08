@@ -4,12 +4,6 @@
   "description": "Endpoint agnostic, unidirectional data fetching for React applications",
   "source": "src/DiodePublic.js",
   "main": "lib/DiodePublic.js",
-  "files": [
-    "lib",
-    "LICENSE",
-    "package.json",
-    "README.md"
-  ],
   "scripts": {
     "lint": "marlint --quiet",
     "test": "jest --coverage",

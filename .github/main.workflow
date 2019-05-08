@@ -1,22 +1,22 @@
 workflow "Publish to npm" {
-  resolves = "publish"
+  resolves = "Publish package"
   on = "push"
 }
 
-action "new version" {
+action "Check for new version" {
   uses = "actions/bin/filter@master"
   args = "tag"
 }
 
-action "publish" {
-  uses = "nuxt/actions-yarn@node-10"
-  needs = ["install"]
+action "Publish package" {
+  uses = "nuxt/actions-yarn@master"
+  needs = ["Install dependencies"]
   args = "publish --access public"
   secrets = ["NPM_AUTH_TOKEN"]
 }
 
-action "install" {
-  uses = "nuxt/actions-yarn@node-10"
-  needs = ["new version"]
+action "Install dependencies" {
+  uses = "nuxt/actions-yarn@master"
+  needs = ["Check for new version"]
   args = "install --pure-lockfile"
 }

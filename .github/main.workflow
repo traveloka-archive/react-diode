@@ -26,7 +26,7 @@ action "test" {
 }
 
 action "publish" {
-  uses = "actions/npm@master"
+  uses = "actions/actions-yarn@node-10"
   needs = ["build ", "test"]
   args = "publish --access public"
   secrets = ["NPM_AUTH_TOKEN"]

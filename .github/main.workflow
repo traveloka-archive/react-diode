@@ -13,21 +13,9 @@ action "new version" {
   args = "tag"
 }
 
-action "build" {
-  uses = "nuxt/actions-yarn@node-10"
-  args = "build"
-  needs = ["test"]
-}
-
-action "test" {
-  uses = "nuxt/actions-yarn@node-10"
-  args = "test"
-  needs = ["install"]
-}
-
 action "publish" {
   uses = "nuxt/actions-yarn@node-10"
-  needs = ["build"]
+  needs = ["install"]
   args = "publish --access public"
   secrets = ["NPM_AUTH_TOKEN"]
 }

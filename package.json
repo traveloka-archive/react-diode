@@ -4,10 +4,17 @@
   "description": "Endpoint agnostic, unidirectional data fetching for React applications",
   "source": "src/DiodePublic.js",
   "main": "lib/DiodePublic.js",
+  "files": [
+    "lib/",
+    "package.json",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "lint": "marlint --quiet",
     "test": "jest --coverage",
-    "build": "microbundle --jsx React.createElement",
+    "prepare": "npm run test && npm run build",
+    "build": "microbundle --jsx React.createElement -o lib",
     "format": "prettier --write src/**/*.js"
   },
   "repository": {

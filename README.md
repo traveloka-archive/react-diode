@@ -34,6 +34,24 @@ $ npm install react-diode
 
 See `/examples` directory
 
+## Contributing
+
+### Publishing new version
+
+`react-diode` is published semi automatically via [GitHub Action](https://github.com/traveloka/react-diode/actions). You just need to update the version in `package.json` via `npm version` and push to master alongside git tag.
+
+```sh
+# First pull latest master
+git pull origin master
+
+# Then determine the next version
+npm version patch # for bugfix
+npm version minor # for new feature
+npm version major # for breaking change
+
+# Push changes to GitHub 
+git push origin master --follow-tags
+```
 ## License
 
 MIT

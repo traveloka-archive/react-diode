@@ -140,10 +140,13 @@ class DiodeStore {
 
       // this query type might be partially cached
       // check specific fragment
-      filteredFragments[fragmentKey] = {};
       innerFragmentKeys.forEach(innerKey => {
         if (cachedFragment && cachedFragment[innerKey]) {
           return;
+        }
+
+        if (!filteredFragments[fragmentKey]) {
+          filteredFragments[fragmentKey] = {};
         }
 
         filteredFragments[fragmentKey][innerKey] = innerFragment[innerKey];

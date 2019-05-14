@@ -6,7 +6,6 @@ import "react-testing-library/cleanup-after-each";
 import Diode from "../DiodePublic";
 import ContentResourceQuery from "./fixtures/ContentResourceQuery";
 import ImageResourceQuery from "./fixtures/ImageResourceQuery";
-import ImageSliderQuery from "./fixtures/ImageSliderQuery";
 
 const fakeNetworkLayer = {
   sendQueries: jest.fn()

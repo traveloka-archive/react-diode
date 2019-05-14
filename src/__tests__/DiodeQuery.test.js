@@ -126,8 +126,8 @@ test("Cached fragments should not be sent as payload", async () => {
 
   await waitForElement(() => container.firstChild);
 
-  // Checking the params sent to sendQueries when it is called
   /*
+    Checking the params sent to sendQueries when it is called
     First array: calls
     Second array: params
     Third array: query

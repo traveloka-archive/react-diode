@@ -3,9 +3,9 @@ workflow "Publish to npm" {
   on = "push"
 }
 
-action "Check for new version" {	
-  uses = "actions/bin/filter@master"	
-  args = "tag"	
+action "Check for new version" {
+  uses = "actions/bin/filter@master"
+  args = "tag"
 }
 
 action "Publish package" {

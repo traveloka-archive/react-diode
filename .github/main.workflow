@@ -3,9 +3,14 @@ workflow "Publish to npm" {
   on = "push"
 }
 
+action "Check for new version" {	
+  uses = "actions/bin/filter@master"	
+  args = "tag"	
+}
+
 action "Publish package" {
   uses = "traveloka/actions-yarn@master"
-  needs = ["Build package"]
+  needs = ["Check for new version", "Build package"]
   args = "publish --access public"
   secrets = ["NPM_AUTH_TOKEN"]
 }

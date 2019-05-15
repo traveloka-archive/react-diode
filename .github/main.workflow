@@ -9,14 +9,14 @@ action "Check for new version" {
 }
 
 action "Publish package" {
-  uses = "nuxt/actions-yarn@master"
+  uses = "traveloka/actions-yarn@master"
   needs = ["Install dependencies"]
   args = "publish --access public"
   secrets = ["NPM_AUTH_TOKEN"]
 }
 
 action "Install dependencies" {
-  uses = "nuxt/actions-yarn@master"
+  uses = "traveloka/actions-yarn@master"
   needs = ["Check for new version"]
-  args = "install --pure-lockfile"
+  args = "install --pure-lockfile --prefer-offline"
 }

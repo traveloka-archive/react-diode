@@ -18,6 +18,5 @@ action "Build package" {
 
 action "Install dependencies" {
   uses = "traveloka/actions-yarn@master"
-  needs = ["Check for new version"]
   args = "install --pure-lockfile --prefer-offline"
 }

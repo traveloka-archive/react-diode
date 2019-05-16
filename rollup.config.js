@@ -1,4 +1,6 @@
 import babel from "rollup-plugin-babel";
+import resolve from "rollup-plugin-node-resolve";
+import commonjs from "rollup-plugin-commonjs";
 
 module.exports = {
   input: "src/DiodePublic.js",
@@ -6,18 +8,13 @@ module.exports = {
     file: "lib/DiodePublic.js",
     format: "cjs"
   },
-  external: [
-    "deep-extend",
-    "hoist-non-react-statics",
-    "lodash.find",
-    "lodash.mergewith",
-    "object-assign",
-    "react",
-    "react-is"
-  ],
+  external: ["react", "react-is"],
   plugins: [
     babel({
-      exclude: "node_modules/**"
-    })
+      exclude: "node_modules/**",
+      runtimeHelpers: true
+    }),
+    resolve(),
+    commonjs()
   ]
 };

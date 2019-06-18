@@ -37,7 +37,6 @@
   },
   "homepage": "https://github.com/traveloka/react-diode#readme",
   "dependencies": {
-    "@babel/runtime": "^7.4.4",
     "deep-extend": "^0.6.0",
     "hoist-non-react-statics": "^2.5.0",
     "lodash.find": "^4.3.0",
@@ -58,6 +57,7 @@
     "@babel/preset-env": "^7.4.3",
     "@babel/preset-flow": "^7.0.0",
     "@babel/preset-react": "^7.0.0",
+    "babel-plugin-async-to-promises": "^1.0.5",
     "husky": "^1.2.0",
     "jest": "^24.7.1",
     "jest-dom": "^3.0.0",

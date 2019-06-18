@@ -7,13 +7,13 @@ module.exports = {
     format: "cjs"
   },
   external: [
-    "deep-extend",
-    "hoist-non-react-statics",
-    "lodash.find",
-    "lodash.mergewith",
-    "object-assign",
     "react",
-    "react-is"
+    "react-is",
+    "lodash.mergewith",
+    "deep-extend",
+    "object-assign",
+    "hoist-non-react-statics",
+    "lodash.find"
   ],
   plugins: [
     babel({

@@ -165,9 +165,6 @@ class DiodeStore {
       .compile()
       .map(query => {
         const { fragment, params } = this.filterCachedFragments(query);
-        if (Object.keys(fragment).length === 0) {
-          return null;
-        }
 
         const queryRequestInfo = query.request(fragment, params, options);
         return generateQueryRequest(query, queryRequestInfo);

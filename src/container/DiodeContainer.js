@@ -44,11 +44,13 @@ class DiodeQueryFetcher extends React.Component {
     try {
       await cache.resolve(query);
 
-      if (typeof this.props.afterFetchCallback === "function") {
-        await new Promise(resolve =>
-          this.props.afterFetchCallback(resolve, cache.getContents())
-        );
-      }
+      await new Promise(resolve => {
+        if (typeof this.props.afterFetchCallback === "function") {
+          this.props.afterFetchCallback(resolve, cache.getContents());
+        } else {
+          resolve();
+        }
+      });
 
       this.setState({ isLoading: false });
     } catch (error) {

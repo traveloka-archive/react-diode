@@ -148,21 +148,13 @@ export function createContainer(
 ): DiodeContainer {
   /* istanbul ignore next */
   const componentName = Component.displayName || Component.name;
-  const containerName = `Diode(${componentName})`;
   const query = new DiodeContainerQuery(
     componentName,
     spec.queries,
     spec.children
   );
 
-  let Container;
-  function ContainerConstructor(props) {
-    /* istanbul ignore else */
-    if (!Container) {
-      Container = createContainerComponent(Component, spec, query);
-    }
-    return new Container(props);
-  }
+  const ContainerConstructor = createContainerComponent(Component, spec, query);
 
   ContainerConstructor.setWrapperInfo = function setWrapperInfo(wrapperInfo) {
     objectAssign(spec.wrapperInfo, wrapperInfo);
@@ -185,7 +177,6 @@ export function createContainer(
   };
 
   ContainerConstructor.query = deepExtend(query, Component.query);
-  ContainerConstructor.displayName = containerName;
   ContainerConstructor.componentName = componentName;
 
   return hoistStatics(ContainerConstructor, Component, { query: true });
